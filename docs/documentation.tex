@@ -9,12 +9,14 @@
 \usepackage{natbib} % Required to change bibliography style to APA
 \usepackage{amsmath} % Required for some math elements
 \usepackage{caption}
-\usepackage{tikz}
 \usepackage{float}
-\usetikzlibrary{arrows,automata, positioning}
 \usepackage{import}
 \setlength\parindent{0pt} % Removes all indentation from paragraphs
 
+\usepackage{tikz-er2}
+\usetikzlibrary{positioning}
+\usetikzlibrary{decorations.pathreplacing}
+	
 \title{\vspace{-2cm}Progetto di Tecnologie Informatiche per il Web} % Title
 \author{Negri Riccardo} % Author name
 \date{\today}
@@ -91,6 +93,8 @@
 	
 	\pagebreak
 	\section{Database design}
+	
+	\subsection{Analisi testo delle specifiche}
 	Legenda: \textcolor{red}{entità}, \textcolor{ForestGreen}{attributi}, \textcolor{blue}{relazioni}.
 	\\
 	\\
@@ -98,9 +102,9 @@
 	altro. L’applicazione supporta registrazione e login mediante una pagina pubblica con
 	opportune form. La registrazione controlla la validità sintattica dell’indirizzo di email e
 	l’uguaglianza tra i campi “password” e “ripeti password”. La registrazione controlla l’unicità
-	dello username. Un utente ha un nome, un cognome, uno username e uno o più conti correnti.
-	Un conto ha un codice, un saldo, e i trasferimenti fatti (in uscita) e ricevuti (in ingresso) dal
-	conto. Un trasferimento ha una data, un importo, un conto di origine e un conto di destinazione.
+	dello username. Un \textcolor{red}{utente} ha un \textcolor{ForestGreen}{nome}, un \textcolor{ForestGreen}{cognome}, uno \textcolor{ForestGreen}{username} e \textcolor{blue}{uno o più conti correnti}.
+	Un \textcolor{red}{conto}  ha un \textcolor{ForestGreen}{codice}, un \textcolor{ForestGreen}{saldo}, e i \textcolor{blue}{trasferimenti fatti (in uscita) e ricevuti (in ingresso)} dal
+	conto. Un  \textcolor{red}{trasferimento} ha una \textcolor{ForestGreen}{data}, un \textcolor{ForestGreen}{importo}, un \textcolor{ForestGreen}{conto di origine} e un \textcolor{ForestGreen}{conto di destinazione}.
 	Quando l’utente accede all’applicazione appare una pagina LOGIN per la verifica delle
 	credenziali. In seguito all’autenticazione dell’utente appare l’HOME page che mostra l’elenco
 	dei suoi conti. Quando l’utente seleziona un conto, appare una pagina STATO DEL CONTO
@@ -120,6 +124,56 @@
 	contiene un collegamento per tornare alla pagina precedente. L’applicazione consente il
 	logout dell’utente.
 	
+	\subsection{Diagramma E-R (Entità-Relazione)}
+
+	\begin{tikzpicture}
+		\tikzset{
+			draw circle/.style = {
+				decoration = {show path construction,
+					lineto code = {
+						\filldraw[black,fill=white] (\tikzinputsegmentfirst) circle(4pt);
+					}
+				}, decorate,
+			},
+			attr/.style = { postaction = {draw circle} },
+			every entity/.style = {thin},
+			every attribute/.style =  { draw=none}, %node distance=1cm,
+			every relationship/.style =  {thin} %node distance=1cm,
+		}
+		
+		\tikzset{
+			position/.style args={#1:#2 from #3}{
+				at=(#3.#1), anchor=#1+180, shift=(#1:#2)
+			}
+		}
+	
+		\node[entity, minimum height=3cm, minimum height=2.5cm, minimum width=2.5cm] (utente) {Utente};
+		\node[attribute] [position=125:1.66  from utente] {\key{ID}} edge[attr] (utente);
+		\node[attribute] [position=105:1.47 from utente] {Nome} edge[attr] (utente);
+		\node[attribute] [position=77:1.38 from utente] {Cognome} edge[attr] (utente);
+		\node[attribute] [position=50:1.8 from utente] {Username} edge[attr] (utente);
+		
+		\node[entity, below right=4cm of utente, minimum height=2.5cm, minimum width=2.5cm] (conto) {Conto};
+		\node[attribute] [position=105:1.43 from conto] {\key{Codice}} edge[attr] (conto);
+		\node[attribute] [position=75:1.5 from conto] {Saldo} edge[attr] (conto);
+		
+		\node[entity, above right=4cm of conto, minimum height=2.5cm, minimum width=2.5cm] (trasferimento) {Trasferimento};
+		\node[attribute] [position=110:1.42 from trasferimento] {\key{ID}} edge[attr] (trasferimento);
+		\node[attribute] [position=90:1.42 from trasferimento] {Data} edge[attr] (trasferimento);\\
+		\node[attribute] [position=65:1.5 from trasferimento] {Importo} edge[attr] (trasferimento);
+		
+		\node[relationship, below=2.87cm of utente, minimum height=2.5cm, minimum width=2.5cm] (rel1) {Possiede};
+		\node[relationship, below=2.79cm of trasferimento, minimum height=2.5cm, minimum width=2.5cm, text width=1.1cm, align=center] (rel2) {Esegue o Riceve};
+		
+		\path (rel1) edge node [above left = 0.8cm and 0.1cm] {0-\(n\)} (utente);
+		\path (rel1) edge node [above right = 0.1cm and 0.9cm] {1}  (conto);
+		\path (rel2) edge node [above left = 0.8cm and 0.1cm] {2} (trasferimento);
+		\path (rel2) edge node [above left = 0.1cm and 0.5cm] {0-\(n\)}  (conto);
+		
+	\end{tikzpicture}
+	
+	
+	%sql minted
 	\section{Versione pure HTML}
 	
 	\section{Versione RIA}

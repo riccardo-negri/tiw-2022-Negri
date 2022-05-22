@@ -122,6 +122,7 @@ contiene un collegamento per tornare alla pagina precedente. L’applicazione co
 logout dell’utente.
 
 \subsection{Progetto concettuale - Diagramma E-R (Entità-Relazione)}
+Da aggiornare
 \begin{figure}[H]
 \centering
 \includegraphics[width=1\textwidth]{assets/diagram.eps}
@@ -130,22 +131,22 @@ logout dell’utente.
 \subsection{Progetto logico}
 UTENTE(\underline{ID}, username, password, nome, cognome)
 \\
-CONTO(\underline{codice}, saldo, utente)
+CONTO(\underline{ID}, codice, saldo, utente)
 \\
-TRASFERIMENTO(\underline{ID}, data, importo, origine, destinazione)
+TRASFERIMENTO(\underline{ID}, data, importo, causale, origine, destinazione)
 
 \subsection{Database schema}
 Statement per creare il database:
-\begin{minted}{sql}
+\begin{minted}{mysql}
 CREATE DATABASE tiw_db;
 \end{minted}
 
 Statements per creare le tabelle:
-\begin{minted}{sql}
+\begin{minted}{mysql}
 CREATE TABLE `tiw_db`.`utente` (
 	`id` INT NOT NULL AUTO_INCREMENT,
-	`password` VARCHAR(45) NOT NULL,
 	`username` VARCHAR(45) NOT NULL,
+	`password` VARCHAR(45) NOT NULL,
 	`nome` VARCHAR(45) NOT NULL,
 	`cognome` VARCHAR(45) NOT NULL,
 	PRIMARY KEY (`id`)
@@ -155,12 +156,14 @@ CREATE TABLE `tiw_db`.`utente` (
 \pagebreak
 \begin{minted}{mysql}
 CREATE TABLE `tiw_db`.`conto` (
-	`codice` INT NOT NULL AUTO_INCREMENT,
+	`id` INT NOT NULL AUTO_INCREMENT,
+	`codice` INT NOT NULL,
 	`saldo` INT NOT NULL DEFAULT 0,
 	`utente` INT NOT NULL,
 	PRIMARY KEY (`codice`),
 	CONSTRAINT `utente_conto` FOREIGN KEY (`utente`) 
-		REFERENCES `tiw_db`.`utente` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+		REFERENCES `tiw_db`.`utente` (`id`) 
+			ON DELETE NO ACTION ON UPDATE CASCADE
 );
 \end{minted}
 
@@ -169,19 +172,73 @@ CREATE TABLE `tiw_db`.`trasferimento` (
 	`id` INT NOT NULL AUTO_INCREMENT,
 	`data` DATE NOT NULL,
 	`importo` INT NOT NULL,
+	`causale` VARCHAR(255) NOT NULL,
 	`origine` INT NOT NULL,
 	`destinazione` INT NOT NULL,
 	PRIMARY KEY (`id`),
 	CONSTRAINT `trasferimento_origine` FOREIGN KEY (`origine`) 
-		REFERENCES `tiw_db`.`conto` (`codice`)
+		REFERENCES `tiw_db`.`conto` (`id`)
 			ON DELETE NO ACTION ON UPDATE CASCADE,
 	CONSTRAINT `trasferimento_destinazione` FOREIGN KEY (`destinazione`) 
-		REFERENCES `tiw_db`.`conto` (`codice`) 
+		REFERENCES `tiw_db`.`conto` (`id`) 
 			ON DELETE NO ACTION ON UPDATE CASCADE
 );
 \end{minted}
 
 \subsection{Script Python per popolare il database}
+\begin{minted}{python}
+import mysql.connector
+import random
+
+USERS_NUMBER = 10
+MAX_ACCOUNTS_PER_USER = 10
+MAX_MONEY = 1000000
+MAX_TRANSACTIONS_PER_ACCOUNT = 10
+ACCOUNT_NUMBER_LENGTH = 12
+NAMES = ["Francesco", "Sofia", "Alessandro", "Giulia", "Andrea", 
+"Aurora", "Lorenzo", "Emma", "Mattia", "Giorgia"]
+SURNAMES = ["Rossi", "Russo", "Ferrari", "Esposito", "Bianchi", "Colombo", "Ricci", "Gallo", "Conti", "Giordano"]
+DEFAULT_PASSWORD = "pass"
+
+mydb = mysql.connector.connect(
+host="localhost",
+user="admin",
+password="password",
+database="tiw_db"
+)
+
+mycursor = mydb.cursor()
+
+sql_u = "INSERT INTO utente (username, password, nome, cognome) VALUES (%s, %s, %s, %s)"
+sql_c = "INSERT INTO conto (codice, saldo, utente) VALUES (%s, %s, %s)"
+for _ in range(0, USERS_NUMBER):
+name = random.choice(NAMES) 
+surname = random.choice(SURNAMES)
+username = (name + surname).lower()
+password = DEFAULT_PASSWORD
+try:
+mycursor.execute(sql_u, (username, password, name, surname))
+except mysql.connector.errors.IntegrityError:
+print("GERE")
+continue
+mydb.commit()
+for _ in range(0, random.randint(0, MAX_ACCOUNTS_PER_USER)):
+account_number = '{0:05}'.format(random.randint(1, 100000))
+money = random.randint(0, MAX_MONEY)
+try:
+mycursor.execute(sql_c, (account_number, money, username))
+except mysql.connector.errors.IntegrityError:
+print("GERE")
+continue
+mydb.commit()
+
+#mycursor.executemany(sql_u, val_u)
+
+#mydb.commit()
+
+print(mycursor.rowcount, "was insserted.")
+
+\end{minted}
 \section{Versione pure HTML}
 
 \section{Versione RIA}

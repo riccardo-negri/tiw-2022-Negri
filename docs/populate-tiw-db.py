@@ -30,9 +30,9 @@ mycursor = mydb.cursor()
 
 accounts = []
 accounts_money = {}
-sql_u = "INSERT INTO utente (username, email, password, nome, cognome) VALUES (%s, %s, %s, %s, %s)"
-sql_c = "INSERT INTO conto (codice, saldo, utente) VALUES (%s, %s, %s)"
-sql_t = "INSERT INTO trasferimento (importo, causale, origine, destinazione) VALUES (%s, %s, %s, %s)"
+sql_u = "INSERT INTO user(username, email, password, name, surname) VALUES (%s, %s, %s, %s, %s)"
+sql_c = "INSERT INTO account (code, balance, user) VALUES (%s, %s, %s)"
+sql_t = "INSERT INTO transaction (amount, reason, origin, destination) VALUES (%s, %s, %s, %s)"
 id_u = 0
 id_c = 0
 id_t = 0

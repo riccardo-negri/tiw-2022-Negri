@@ -145,7 +145,7 @@ Statements per creare le tabelle:
 \begin{minted}{mysql}
 CREATE TABLE `tiw_db`.`utente` (
 	`id` INT NOT NULL AUTO_INCREMENT,
-	`username` VARCHAR(45) NOT NULL,
+	`username` VARCHAR(45) NOT NULL UNIQUE,
 	`password` VARCHAR(45) NOT NULL,
 	`nome` VARCHAR(45) NOT NULL,
 	`cognome` VARCHAR(45) NOT NULL,
@@ -157,10 +157,10 @@ CREATE TABLE `tiw_db`.`utente` (
 \begin{minted}{mysql}
 CREATE TABLE `tiw_db`.`conto` (
 	`id` INT NOT NULL AUTO_INCREMENT,
-	`codice` INT NOT NULL,
+	`codice` INT NOT NULL UNIQUE,
 	`saldo` INT NOT NULL DEFAULT 0,
 	`utente` INT NOT NULL,
-	PRIMARY KEY (`codice`),
+	PRIMARY KEY (`id`),
 	CONSTRAINT `utente_conto` FOREIGN KEY (`utente`) 
 		REFERENCES `tiw_db`.`utente` (`id`) 
 			ON DELETE NO ACTION ON UPDATE CASCADE
@@ -170,7 +170,7 @@ CREATE TABLE `tiw_db`.`conto` (
 \begin{minted}{mysql}
 CREATE TABLE `tiw_db`.`trasferimento` (
 	`id` INT NOT NULL AUTO_INCREMENT,
-	`data` DATE NOT NULL,
+	`timestamp` DATETIME DEFAULT CURRENT_TIMESTAMP,
 	`importo` INT NOT NULL,
 	`causale` VARCHAR(255) NOT NULL,
 	`origine` INT NOT NULL,
@@ -186,60 +186,38 @@ CREATE TABLE `tiw_db`.`trasferimento` (
 \end{minted}
 
 \subsection{Script Python per popolare il database}
-\begin{minted}{python}
-import mysql.connector
-import random
+Al fine di popolare automaticamente un nuovo database è stato creato uno script in Python chiamato "populate-tiw-db.py." 
 
-USERS_NUMBER = 10
-MAX_ACCOUNTS_PER_USER = 10
-MAX_MONEY = 1000000
-MAX_TRANSACTIONS_PER_ACCOUNT = 10
-ACCOUNT_NUMBER_LENGTH = 12
-NAMES = ["Francesco", "Sofia", "Alessandro", "Giulia", "Andrea", 
-"Aurora", "Lorenzo", "Emma", "Mattia", "Giorgia"]
-SURNAMES = ["Rossi", "Russo", "Ferrari", "Esposito", "Bianchi", "Colombo", "Ricci", "Gallo", "Conti", "Giordano"]
-DEFAULT_PASSWORD = "pass"
-
-mydb = mysql.connector.connect(
-host="localhost",
-user="admin",
-password="password",
-database="tiw_db"
-)
-
-mycursor = mydb.cursor()
-
-sql_u = "INSERT INTO utente (username, password, nome, cognome) VALUES (%s, %s, %s, %s)"
-sql_c = "INSERT INTO conto (codice, saldo, utente) VALUES (%s, %s, %s)"
-for _ in range(0, USERS_NUMBER):
-name = random.choice(NAMES) 
-surname = random.choice(SURNAMES)
-username = (name + surname).lower()
-password = DEFAULT_PASSWORD
-try:
-mycursor.execute(sql_u, (username, password, name, surname))
-except mysql.connector.errors.IntegrityError:
-print("GERE")
-continue
-mydb.commit()
-for _ in range(0, random.randint(0, MAX_ACCOUNTS_PER_USER)):
-account_number = '{0:05}'.format(random.randint(1, 100000))
-money = random.randint(0, MAX_MONEY)
-try:
-mycursor.execute(sql_c, (account_number, money, username))
-except mysql.connector.errors.IntegrityError:
-print("GERE")
-continue
-mydb.commit()
-
-#mycursor.executemany(sql_u, val_u)
-
-#mydb.commit()
-
-print(mycursor.rowcount, "was insserted.")
-
-\end{minted}
 \section{Versione pure HTML}
+
+\subsection{Analisi requisiti delle specifiche}
+Un’applicazione web consente la gestione di trasferimenti di denaro online da un conto a un
+altro. L’applicazione supporta registrazione e login mediante una pagina pubblica con
+opportune form. La registrazione controlla la validità sintattica dell’indirizzo di email e
+l’uguaglianza tra i campi “password” e “ripeti password”. La registrazione controlla l’unicità
+dello username. Un utente ha un nome, un cognome, uno username e uno o più conti correnti.
+Un conto ha un codice, un saldo, e i trasferimenti fatti (in uscita) e ricevuti (in ingresso) dal
+conto. Un trasferimento ha una data, un importo, un conto di origine e un conto di destinazione.
+Quando l’utente accede all’applicazione appare una pagina LOGIN per la verifica delle
+credenziali. In seguito all’autenticazione dell’utente appare l’HOME page che mostra l’elenco
+dei suoi conti. Quando l’utente seleziona un conto, appare una pagina STATO DEL CONTO
+che mostra i dettagli del conto e la lista dei movimenti in entrata e in uscita, ordinati per data
+discendente. La pagina contiene anche una form per ordinare un trasferimento. La form
+contiene i campi: codice utente destinatario, codice conto destinatario, causale e importo.
+All’invio della form con il bottone INVIA, l’applicazione controlla che il conto di destinazione
+appartenga all’utente specificato e che il conto origine abbia un saldo superiore o uguale
+all’importo del trasferimento. In caso di mancanza di anche solo una condizione, l’applicazione
+mostra una pagina con un avviso di fallimento che spiega il motivo del mancato trasferimento.
+Nel caso in cui entrambe le condizioni siano soddisfatte, l’applicazione deduce l’importo dal
+conto di origine, aggiunge l’importo al conto di destinazione e mostra una pagina CONFERMA
+TRASFERIMENTO che presenta i dati dell’importo trasferito e i dati del conto di origine e di
+destinazione con i rispettivi saldi precedenti al trasferimento e aggiornati dopo il trasferimento.
+L’applicazione deve garantire l’atomicità del trasferimento: ogni volta che il conto di
+destinazione viene addebitato, il conto di origine deve essere accreditato. Ogni pagina
+contiene un collegamento per tornare alla pagina precedente. L’applicazione consente il
+logout dell’utente.
+
+\subsection{Completamento specifiche}
 
 \section{Versione RIA}
 

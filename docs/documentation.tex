@@ -97,8 +97,8 @@ Legenda: \textcolor{red}{entità}, \textcolor{ForestGreen}{attributi}, \textcolo
 \\
 Un’applicazione web consente la gestione di trasferimenti di denaro online da un conto a un
 altro. L’applicazione supporta registrazione e login mediante una pagina pubblica con
-opportune form. La registrazione controlla la validità sintattica dell’indirizzo di email e
-l’uguaglianza tra i campi “password” e “ripeti password”. La registrazione controlla l’unicità
+opportune form. La registrazione controlla la validità sintattica dell’\textcolor{ForestGreen}{indirizzo di email} e
+l’uguaglianza tra i campi “\textcolor{ForestGreen}{password}” e “ripeti password”. La registrazione controlla l’unicità
 dello username. Un \textcolor{red}{utente} ha un \textcolor{ForestGreen}{nome}, un \textcolor{ForestGreen}{cognome}, uno \textcolor{ForestGreen}{username} e \textcolor{blue}{uno o più conti correnti}.
 Un \textcolor{red}{conto}  ha un \textcolor{ForestGreen}{codice}, un \textcolor{ForestGreen}{saldo}, e i \textcolor{blue}{trasferimenti fatti (in uscita) e ricevuti (in ingresso)} dal
 conto. Un  \textcolor{red}{trasferimento} ha una \textcolor{ForestGreen}{data}, un \textcolor{ForestGreen}{importo}, un \textcolor{blue}{conto di origine e un conto di destinazione}.
@@ -107,7 +107,7 @@ credenziali. In seguito all’autenticazione dell’utente appare l’HOME page 
 dei suoi conti. Quando l’utente seleziona un conto, appare una pagina STATO DEL CONTO
 che mostra i dettagli del conto e la lista dei movimenti in entrata e in uscita, ordinati per data
 discendente. La pagina contiene anche una form per ordinare un trasferimento. La form
-contiene i campi: codice utente destinatario, codice conto destinatario, causale e importo.
+contiene i campi: codice utente destinatario, codice conto destinatario, \textcolor{ForestGreen}{causale} e importo.
 All’invio della form con il bottone INVIA, l’applicazione controlla che il conto di destinazione
 appartenga all’utente specificato e che il conto origine abbia un saldo superiore o uguale
 all’importo del trasferimento. In caso di mancanza di anche solo una condizione, l’applicazione
@@ -122,14 +122,14 @@ contiene un collegamento per tornare alla pagina precedente. L’applicazione co
 logout dell’utente.
 
 \subsection{Progetto concettuale - Diagramma E-R (Entità-Relazione)}
-Da aggiornare
+Da aggiornare - deve esistere sempre un conto associato ad un utente, anche quando si registra
 \begin{figure}[H]
 \centering
 \includegraphics[width=1\textwidth]{assets/diagram.eps}
 \end{figure}
 
 \subsection{Progetto logico}
-UTENTE(\underline{ID}, username, password, nome, cognome)
+UTENTE(\underline{ID}, username, email, password, nome, cognome)
 \\
 CONTO(\underline{ID}, codice, saldo, utente)
 \\
@@ -146,6 +146,7 @@ Statements per creare le tabelle:
 CREATE TABLE `tiw_db`.`utente` (
 	`id` INT NOT NULL AUTO_INCREMENT,
 	`username` VARCHAR(45) NOT NULL UNIQUE,
+	`email` VARCHAR(45) NOT NULL UNIQUE,
 	`password` VARCHAR(45) NOT NULL,
 	`nome` VARCHAR(45) NOT NULL,
 	`cognome` VARCHAR(45) NOT NULL,
@@ -191,26 +192,29 @@ Al fine di popolare automaticamente un nuovo database è stato creato uno script
 \section{Versione pure HTML}
 
 \subsection{Analisi requisiti delle specifiche}
+Legenda: \textcolor{red}{pagine}, \textcolor{ForestGreen}{view components}, \textcolor{blue}{eventi}, \textcolor{brown}{azioni (modifca il db)}.
+\\
+\\
 Un’applicazione web consente la gestione di trasferimenti di denaro online da un conto a un
-altro. L’applicazione supporta registrazione e login mediante una pagina pubblica con
-opportune form. La registrazione controlla la validità sintattica dell’indirizzo di email e
+altro. L’applicazione supporta  \textcolor{brown}{registrazione} e  \textcolor{blue}{login} mediante una pagina pubblica con
+opportune  \textcolor{ForestGreen}{form}. La registrazione controlla la validità sintattica dell’indirizzo di email e
 l’uguaglianza tra i campi “password” e “ripeti password”. La registrazione controlla l’unicità
 dello username. Un utente ha un nome, un cognome, uno username e uno o più conti correnti.
 Un conto ha un codice, un saldo, e i trasferimenti fatti (in uscita) e ricevuti (in ingresso) dal
 conto. Un trasferimento ha una data, un importo, un conto di origine e un conto di destinazione.
-Quando l’utente accede all’applicazione appare una pagina LOGIN per la verifica delle
-credenziali. In seguito all’autenticazione dell’utente appare l’HOME page che mostra l’elenco
-dei suoi conti. Quando l’utente seleziona un conto, appare una pagina STATO DEL CONTO
-che mostra i dettagli del conto e la lista dei movimenti in entrata e in uscita, ordinati per data
-discendente. La pagina contiene anche una form per ordinare un trasferimento. La form
+Quando l’utente accede all’applicazione appare una  \textcolor{red}{pagina LOGIN} per la verifica delle
+credenziali. In seguito all’autenticazione dell’utente appare \textcolor{red}{l’HOME page} che \textcolor{ForestGreen}{mostra l’elenco
+dei suoi conti}. Quando l’utente  \textcolor{blue}{seleziona un conto}, appare una \textcolor{red}{pagina STATO DEL CONTO}
+che mostra i \textcolor{ForestGreen}{dettagli del conto e la lista dei movimenti in entrata e in uscita}, ordinati per data
+discendente. La pagina contiene anche una \textcolor{ForestGreen}{form} per ordinare un trasferimento. La form
 contiene i campi: codice utente destinatario, codice conto destinatario, causale e importo.
 All’invio della form con il bottone INVIA, l’applicazione controlla che il conto di destinazione
 appartenga all’utente specificato e che il conto origine abbia un saldo superiore o uguale
 all’importo del trasferimento. In caso di mancanza di anche solo una condizione, l’applicazione
-mostra una pagina con un avviso di fallimento che spiega il motivo del mancato trasferimento.
+mostra una \textcolor{red}{pagina con un avviso di fallimento} che spiega il motivo del mancato trasferimento.
 Nel caso in cui entrambe le condizioni siano soddisfatte, l’applicazione deduce l’importo dal
-conto di origine, aggiunge l’importo al conto di destinazione e mostra una pagina CONFERMA
-TRASFERIMENTO che presenta i dati dell’importo trasferito e i dati del conto di origine e di
+conto di origine, aggiunge l’importo al conto di destinazione e mostra una \textcolor{red}{pagina CONFERMA
+TRASFERIMENTO} che presenta i dati dell’importo trasferito e i dati del conto di origine e di
 destinazione con i rispettivi saldi precedenti al trasferimento e aggiornati dopo il trasferimento.
 L’applicazione deve garantire l’atomicità del trasferimento: ogni volta che il conto di
 destinazione viene addebitato, il conto di origine deve essere accreditato. Ogni pagina

@@ -30,7 +30,7 @@ mycursor = mydb.cursor()
 
 accounts = []
 accounts_money = {}
-sql_u = "INSERT INTO utente (username, password, nome, cognome) VALUES (%s, %s, %s, %s)"
+sql_u = "INSERT INTO utente (username, email, password, nome, cognome) VALUES (%s, %s, %s, %s, %s)"
 sql_c = "INSERT INTO conto (codice, saldo, utente) VALUES (%s, %s, %s)"
 sql_t = "INSERT INTO trasferimento (importo, causale, origine, destinazione) VALUES (%s, %s, %s, %s)"
 id_u = 0
@@ -43,10 +43,11 @@ for _ in range(0, USERS_NUMBER):
     name = random.choice(NAMES)
     surname = random.choice(SURNAMES)
     username = (name + surname).lower()
+    email = (name + "." + surname + "@mail.com").lower()
     password = DEFAULT_PASSWORD
     try:
         id_u += 1
-        mycursor.execute(sql_u, (username, password, name, surname))
+        mycursor.execute(sql_u, (username, email, password, name, surname))
         count_u += 1
     except mysql.connector.errors.IntegrityError:
         #print("HERE")

@@ -162,7 +162,7 @@ CREATE TABLE `tiw_db`.`account` (
 	`balance` INT NOT NULL DEFAULT 0,
 	`user` INT NOT NULL,
 	PRIMARY KEY (`id`),
-	CONSTRAINT `utente_conto` FOREIGN KEY (`utente`) 
+	CONSTRAINT `user_account` FOREIGN KEY (`user`) 
 		REFERENCES `tiw_db`.`user` (`id`) 
 			ON DELETE NO ACTION ON UPDATE CASCADE
 );
@@ -172,15 +172,15 @@ CREATE TABLE `tiw_db`.`account` (
 CREATE TABLE `tiw_db`.`transaction` (
 	`id` INT NOT NULL AUTO_INCREMENT,
 	`timestamp` DATETIME DEFAULT CURRENT_TIMESTAMP,
-	`amout` INT NOT NULL,
+	`amount` INT NOT NULL,
 	`reason` VARCHAR(255) NOT NULL,
 	`origin` INT NOT NULL,
 	`destination` INT NOT NULL,
 	PRIMARY KEY (`id`),
-	CONSTRAINT `transaction_origin` FOREIGN KEY (`origine`) 
+	CONSTRAINT `transaction_origin` FOREIGN KEY (`origin`) 
 		REFERENCES `tiw_db`.`account` (`id`)
 			ON DELETE NO ACTION ON UPDATE CASCADE,
-	CONSTRAINT `transaction_destination` FOREIGN KEY (`destinazione`) 
+	CONSTRAINT `transaction_destination` FOREIGN KEY (`destination`) 
 		REFERENCES `tiw_db`.`account` (`id`) 
 			ON DELETE NO ACTION ON UPDATE CASCADE
 );

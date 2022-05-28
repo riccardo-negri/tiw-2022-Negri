@@ -1,4 +1,4 @@
-<nav th:fragment="navbar (currentPage)"
+<nav th:fragment="navbar (currentPage, name, surname)"
      class="navbar navbar-main navbar-expand-lg px-0 mx-4 shadow-none border-radius-xl" id="navbarBlur"
      navbar-scroll="true">
     <div class="container-fluid py-1 px-3">
@@ -13,7 +13,7 @@
                 <li class="nav-item d-flex align-items-center">
                     <a href="" class="nav-link text-body font-weight-bold px-0 text-lg-end">
                         <span class="text-secondary text-sm font-weight-bold">Welcome back,</span>
-                        <span class="text-sm d-sm-inline d-none">Mario Rossi</span>
+                        <span class="text-sm d-sm-inline d-none" th:text="${name} + ' ' + ${surname}">Mario Rossi</span>
                     </a>
                 </li>
             </ul>

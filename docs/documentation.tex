@@ -159,7 +159,7 @@ CREATE TABLE `tiw_db`.`user` (
 CREATE TABLE `tiw_db`.`account` (
 	`id` INT NOT NULL AUTO_INCREMENT,
 	`code` VARCHAR(12) NOT NULL UNIQUE,
-	`balance` INT NOT NULL DEFAULT 0,
+	`balance` FLOAT NOT NULL DEFAULT 0,
 	`user` INT NOT NULL,
 	PRIMARY KEY (`id`),
 	CONSTRAINT `user_account` FOREIGN KEY (`user`) 

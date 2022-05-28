@@ -33,7 +33,7 @@
 <div th:replace="/templates/fragments/sidebar.html :: sidebar(activePage='Account')"></div>
 <main class="main-content position-relative max-height-vh-100 h-100 border-radius-lg ">
     <!-- Navbar -->
-    <div th:replace="/templates/fragments/navbar.html :: navbar(currentPage='Account')"></div>
+    <div th:replace="/templates/fragments/navbar.html :: navbar(currentPage='Account', name = ${name}, surname = ${surname})"></div>
     <!-- End Navbar -->
     <div class="container-fluid pb-4">
         <!-- NEW -->

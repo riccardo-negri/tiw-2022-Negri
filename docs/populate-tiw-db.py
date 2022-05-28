@@ -30,14 +30,15 @@ mydb = mysql.connector.connect(
 mycursor = mydb.cursor()
 
 
-accounts = {}
+accounts = []
 accounts_money = {}
+accounts_user = {}
 sql_u = "INSERT INTO user(username, email, password, name, surname) VALUES (%s, %s, %s, %s, %s)"
 sql_a = "INSERT INTO account (code, balance, user) VALUES (%s, %s, %s)"
 sql_t = "INSERT INTO transaction (timestamp, amount, reason, origin, destination) VALUES (%s, %s, %s, %s, %s)"
 sql_c = "INSERT INTO contact (owner, element) VALUES (%s, %s)"
 id_u = 0
-id_c = 0
+id_a = 0
 id_t = 0
 count_u = 0
 count_a = 0
@@ -61,31 +62,32 @@ for _ in range(0, USERS_NUMBER):
         account_number = '{0:05}'.format(random.randint(1, 100000))
         money = random.randint(0, MAX_MONEY)
         try:
-            id_c += 1
+            id_a += 1
             mycursor.execute(sql_a, (account_number, money, id_u))
-            accounts[id_u] = (id_c)
-            accounts_money[id_c] = money
+            accounts.append(id_a)
+            accounts_user[id_a] = id_u
+            accounts_money[id_a] = money
             count_a += 1
         except mysql.connector.errors.IntegrityError:
             #print("HERE")
             continue
         mydb.commit()
 
-for i in accounts.keys():
+for i in accounts:
     for _ in range(0, random.randint(0, MAX_TRANSACTIONS_PER_ACCOUNT)):
         while True:
-            y = random.choice(list(accounts.values()))
-            if accounts[i] != y: break
-        if accounts_money[accounts[i]] > 1:
-            amount = random.randint(1, accounts_money[accounts[i]])
-        accounts_money[accounts[i]] -= amount
+            y = random.choice(accounts)
+            if i != y: break
+        if accounts_money[i] > 1:
+            amount = random.randint(1, accounts_money[i])
+        accounts_money[i] -= amount
         timestamp = str_time_prop("2000-1-1 00:00:00", "2022-6-20 00:00:00", "%Y-%m-%d %H:%M:%S")
-        mycursor.execute(sql_t, (timestamp, amount, "causale non specificata. {} -> {}".format(accounts[i], y), accounts[i], y))
+        mycursor.execute(sql_t, (timestamp, amount, "causale non specificata. {} -> {}".format(i, y), i, y))
         mydb.commit()
         count_t += 1
 
         if random.randint(1,2) == 1:
-            mycursor.execute(sql_c, (i, y))
+            mycursor.execute(sql_c, (accounts_user[i], y))
             count_c += 1
         mydb.commit()
 

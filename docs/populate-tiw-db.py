@@ -59,7 +59,7 @@ for _ in range(0, USERS_NUMBER):
         continue
     mydb.commit()
     for _ in range(0, random.randint(0, MAX_ACCOUNTS_PER_USER)):
-        account_number = '{0:05}'.format(random.randint(1, 100000))
+        account_number = '{0:12}'.format(random.randint(100000000000, 1000000000000))
         money = random.randint(0, MAX_MONEY)
         try:
             id_a += 1

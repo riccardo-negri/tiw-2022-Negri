@@ -157,7 +157,7 @@ CREATE TABLE `tiw_db`.`user` (
 \begin{minted}{mysql}
 CREATE TABLE `tiw_db`.`account` (
 	`id` INT NOT NULL AUTO_INCREMENT,
-	`code` VARCHAR(12) NOT NULL UNIQUE,
+	`code` CHAR(12) NOT NULL UNIQUE,
 	`balance` FLOAT NOT NULL DEFAULT 0,
 	`user` INT NOT NULL,
 	PRIMARY KEY (`id`),

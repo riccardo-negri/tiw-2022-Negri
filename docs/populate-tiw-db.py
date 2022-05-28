@@ -6,6 +6,7 @@ USERS_NUMBER = 10
 MAX_ACCOUNTS_PER_USER = 10
 MAX_MONEY = 1000000
 MAX_TRANSACTIONS_PER_ACCOUNT = 10
+MAX_CONTACTS_PER_USER = 10
 ACCOUNT_NUMBER_LENGTH = 12
 NAMES = ["Francesco", "Sofia", "Alessandro", "Giulia", "Andrea", 
         "Aurora", "Lorenzo", "Emma", "Mattia", "Giorgia"]
@@ -13,10 +14,10 @@ SURNAMES = ["Rossi", "Russo", "Ferrari", "Esposito", "Bianchi",
             "Colombo", "Ricci", "Gallo", "Conti", "Giordano"]
 DEFAULT_PASSWORD = "pass"
 
-def str_time_prop(start, end, time_format, prop):
+def str_time_prop(start, end, time_format):
     stime = time.mktime(time.strptime(start, time_format))
     etime = time.mktime(time.strptime(end, time_format))
-    ptime = stime + prop * (etime - stime)
+    ptime = stime + random.random() * (etime - stime)
     return time.strftime(time_format, time.localtime(ptime))
 
 mydb = mysql.connector.connect(
@@ -28,17 +29,20 @@ mydb = mysql.connector.connect(
 
 mycursor = mydb.cursor()
 
+
 accounts = []
 accounts_money = {}
 sql_u = "INSERT INTO user(username, email, password, name, surname) VALUES (%s, %s, %s, %s, %s)"
-sql_c = "INSERT INTO account (code, balance, user) VALUES (%s, %s, %s)"
-sql_t = "INSERT INTO transaction (amount, reason, origin, destination) VALUES (%s, %s, %s, %s)"
+sql_a = "INSERT INTO account (code, balance, user) VALUES (%s, %s, %s)"
+sql_t = "INSERT INTO transaction (timestamp, amount, reason, origin, destination) VALUES (%s, %s, %s, %s, %s)"
+sql_c = "INSERT INTO contact (owner, element) VALUES (%s, %s)"
 id_u = 0
 id_c = 0
 id_t = 0
 count_u = 0
-count_c = 0
+count_a = 0
 count_t = 0
+count_c = 0
 for _ in range(0, USERS_NUMBER):
     name = random.choice(NAMES)
     surname = random.choice(SURNAMES)
@@ -58,10 +62,10 @@ for _ in range(0, USERS_NUMBER):
         money = random.randint(0, MAX_MONEY)
         try:
             id_c += 1
-            mycursor.execute(sql_c, (account_number, money, id_u))
+            mycursor.execute(sql_a, (account_number, money, id_u))
             accounts.append(id_c)
             accounts_money[id_c] = money
-            count_c += 1
+            count_a += 1
         except mysql.connector.errors.IntegrityError:
             #print("HERE")
             continue
@@ -75,10 +79,25 @@ for i in accounts:
         if accounts_money[i] > 1:    
             amount = random.randint(1, accounts_money[i])
         accounts_money[i] -= amount
-        mycursor.execute(sql_t, (amount, "causale non specificata. {} -> {}".format(i, y), i, y))
+        timestamp = str_time_prop("2008-1-1 1:30:00", "2009-10-25 4:50:00", "%Y-%m-%d %H:%M:%S")
+        mycursor.execute(sql_t, (timestamp, amount, "causale non specificata. {} -> {}".format(i, y), i, y))
         mydb.commit()
         count_t += 1
 
+for i in accounts:
+    for _ in range(0, random.randint(0, MAX_CONTACTS_PER_USER)):
+        while True:
+            y = random.choice(accounts)
+            if i != y: break
+        try:
+            mycursor.execute(sql_c, (i, y))
+            count_c += 1
+        except mysql.connector.errors.IntegrityError:
+            #print("HERE")
+            continue
+        mydb.commit()
+
 print(count_u, "users were inserted.")
-print(count_c, "bank accounts were inserted.")
+print(count_a, "bank accounts were inserted.")
 print(count_t, "transactions were inserted.")
+print(count_c, "contacts were inserted.")

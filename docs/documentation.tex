@@ -186,6 +186,21 @@ CREATE TABLE `tiw_db`.`transaction` (
 );
 \end{minted}
 
+\begin{minted}{mysql}
+CREATE TABLE `tiw_db`.`contact` (
+	`id` INT NOT NULL AUTO_INCREMENT,
+	`owner` INT NOT NULL,
+	`element` INT NOT NULL,
+	PRIMARY KEY (`id`),
+	CONSTRAINT `contact_owner` FOREIGN KEY (`owner`) 
+		REFERENCES `tiw_db`.`user` (`id`)
+			ON DELETE NO ACTION ON UPDATE CASCADE,
+	CONSTRAINT `contact_element` FOREIGN KEY (`element`) 
+		REFERENCES `tiw_db`.`user` (`id`) 
+			ON DELETE NO ACTION ON UPDATE CASCADE
+);
+\end{minted}
+
 \subsection{Script Python per popolare il database}
 Al fine di popolare automaticamente un nuovo database è stato creato uno script in Python chiamato "populate-tiw-db.py." 
 

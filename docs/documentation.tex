@@ -152,7 +152,6 @@ CREATE TABLE `tiw_db`.`user` (
 	`surname` VARCHAR(45) NOT NULL,
 	PRIMARY KEY (`id`)
 );
-
 \end{minted}
 \pagebreak
 \begin{minted}{mysql}
@@ -196,7 +195,7 @@ CREATE TABLE `tiw_db`.`contact` (
 		REFERENCES `tiw_db`.`user` (`id`)
 			ON DELETE NO ACTION ON UPDATE CASCADE,
 	CONSTRAINT `contact_element` FOREIGN KEY (`element`) 
-		REFERENCES `tiw_db`.`user` (`id`) 
+		REFERENCES `tiw_db`.`account` (`id`) 
 			ON DELETE NO ACTION ON UPDATE CASCADE
 );
 \end{minted}
@@ -237,7 +236,7 @@ contiene un collegamento per tornare alla pagina precedente. L’applicazione co
 logout dell’utente.
 
 \subsection{Completamento specifiche}
-
+Nella rubrica viene aggiunto un conto di un utente, non tutti i conti dell'utente!
 \section{Versione RIA}
 
 

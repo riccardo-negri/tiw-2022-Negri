@@ -30,7 +30,7 @@ mydb = mysql.connector.connect(
 mycursor = mydb.cursor()
 
 
-accounts = []
+accounts = {}
 accounts_money = {}
 sql_u = "INSERT INTO user(username, email, password, name, surname) VALUES (%s, %s, %s, %s, %s)"
 sql_a = "INSERT INTO account (code, balance, user) VALUES (%s, %s, %s)"
@@ -63,7 +63,7 @@ for _ in range(0, USERS_NUMBER):
         try:
             id_c += 1
             mycursor.execute(sql_a, (account_number, money, id_u))
-            accounts.append(id_c)
+            accounts[id_u] = (id_c)
             accounts_money[id_c] = money
             count_a += 1
         except mysql.connector.errors.IntegrityError:
@@ -71,30 +71,22 @@ for _ in range(0, USERS_NUMBER):
             continue
         mydb.commit()
 
-for i in accounts:
+for i in accounts.keys():
     for _ in range(0, random.randint(0, MAX_TRANSACTIONS_PER_ACCOUNT)):
         while True:
-            y = random.choice(accounts)
-            if i != y: break
-        if accounts_money[i] > 1:    
-            amount = random.randint(1, accounts_money[i])
-        accounts_money[i] -= amount
-        timestamp = str_time_prop("2008-1-1 1:30:00", "2009-10-25 4:50:00", "%Y-%m-%d %H:%M:%S")
-        mycursor.execute(sql_t, (timestamp, amount, "causale non specificata. {} -> {}".format(i, y), i, y))
+            y = random.choice(list(accounts.values()))
+            if accounts[i] != y: break
+        if accounts_money[accounts[i]] > 1:
+            amount = random.randint(1, accounts_money[accounts[i]])
+        accounts_money[accounts[i]] -= amount
+        timestamp = str_time_prop("2000-1-1 00:00:00", "2022-6-20 00:00:00", "%Y-%m-%d %H:%M:%S")
+        mycursor.execute(sql_t, (timestamp, amount, "causale non specificata. {} -> {}".format(accounts[i], y), accounts[i], y))
         mydb.commit()
         count_t += 1
 
-for i in accounts:
-    for _ in range(0, random.randint(0, MAX_CONTACTS_PER_USER)):
-        while True:
-            y = random.choice(accounts)
-            if i != y: break
-        try:
+        if random.randint(1,2) == 1:
             mycursor.execute(sql_c, (i, y))
             count_c += 1
-        except mysql.connector.errors.IntegrityError:
-            #print("HERE")
-            continue
         mydb.commit()
 
 print(count_u, "users were inserted.")

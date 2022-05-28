@@ -45,11 +45,32 @@ public class AccountDAO {
             preparedStatement.setString(1, String.valueOf(accountID));
             preparedStatement.setString(2, String.valueOf(accountID));
             try (ResultSet result = preparedStatement.executeQuery();) {
-                if (!result.isBeforeFirst()) // no results, there is no activity
+                if (!result.isBeforeFirst()) // no results, there is no account
                     return null;
                 else {
                     result.next();
                     return result.getTimestamp("timestamp");
+                }
+            }
+        }
+    }
+
+    public Account getAccountFromID (int accountID) throws SQLException {
+        String query = "SELECT  * FROM account  WHERE id = ?";
+        try (PreparedStatement preparedStatement = connection.prepareStatement(query);) {
+            preparedStatement.setString(1, String.valueOf(accountID));
+            try (ResultSet result = preparedStatement.executeQuery();) {
+                if (!result.isBeforeFirst()) // no results, there is no account
+                    return null;
+                else {
+                    result.next();
+                    return new Account(
+                            result.getInt("id"),
+                            result.getString("code"),
+                            result.getFloat("balance"),
+                            result.getInt("user"),
+                            ""
+                    );
                 }
             }
         }

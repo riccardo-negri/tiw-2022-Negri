@@ -68,7 +68,7 @@
                                                      alt="user1">
                                             </div>
                                             <div class="d-flex flex-column justify-content-center">
-                                                <h6 class="mb-0 text-sm" th:text="${account.code}">7253 3535 6324</h6>
+                                                <h6 class="mb-0 text-sm" th:text="${account.code.substring(0,4)} + ' ' +  ${account.code.substring(4,8)} + ' ' + ${account.code.substring(8,12)}">7253 3535 6324</h6>
                                             </div>
                                         </div>
                                     </td>

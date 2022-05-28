@@ -19,8 +19,8 @@ import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
 
 import it.polimi.tiw.utils.ConnectionHandler;
 
-@WebServlet("/home")
-public class Home extends HttpServlet {
+@WebServlet("/account")
+public class Account extends HttpServlet {
     @Serial
     private static final long serialVersionUID = 1L;
     private Connection connection = null;
@@ -41,7 +41,7 @@ public class Home extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         ServletContext servletContext = getServletContext();
         final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
-        String path = "/templates/home.html";
+        String path = "/templates/account.html";
         templateEngine.process(path, ctx, response.getWriter());
     }
 

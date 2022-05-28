@@ -29,7 +29,7 @@ import it.polimi.tiw.dao.UserDAO;
 import it.polimi.tiw.utils.ConnectionHandler;
 import it.polimi.tiw.beans.User;
 
-@WebServlet("/home")
+@WebServlet("/account")
 public class Home extends HttpServlet {
     @Serial
     private static final long serialVersionUID = 1L;
@@ -51,7 +51,7 @@ public class Home extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         ServletContext servletContext = getServletContext();
         final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
-        String path = "/templates/home.html";
+        String path = "/templates/account.html";
         templateEngine.process(path, ctx, response.getWriter());
     }
 

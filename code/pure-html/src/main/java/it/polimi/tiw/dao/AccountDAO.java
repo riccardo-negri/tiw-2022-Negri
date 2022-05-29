@@ -75,4 +75,36 @@ public class AccountDAO {
             }
         }
     }
+
+    public Account getAccountFromCode (String code) throws SQLException {
+        String query = "SELECT  * FROM account  WHERE code = ?";
+        try (PreparedStatement preparedStatement = connection.prepareStatement(query);) {
+            preparedStatement.setString(1, String.valueOf(code));
+            try (ResultSet result = preparedStatement.executeQuery();) {
+                if (!result.isBeforeFirst()) // no results, there is no account
+                    return null;
+                else {
+                    result.next();
+                    return new Account(
+                            result.getInt("id"),
+                            result.getString("code"),
+                            result.getFloat("balance"),
+                            result.getInt("user"),
+                            ""
+                    );
+                }
+            }
+        }
+    }
+
+    public void updateBalance (int accountID, int delta) throws SQLException {
+        String query = "UPDATE account SET balance = balance + ? WHERE id = ?";
+        try (PreparedStatement preparedStatement = connection.prepareStatement(query);) {
+            preparedStatement.setString(1, String.valueOf(delta));
+            preparedStatement.setString(2, String.valueOf(accountID));
+            preparedStatement.executeUpdate();
+        }
+    }
+
+
 }

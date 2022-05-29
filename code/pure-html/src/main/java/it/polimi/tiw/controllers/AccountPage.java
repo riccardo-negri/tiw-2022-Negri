@@ -34,25 +34,9 @@ import it.polimi.tiw.beans.Account;
 import it.polimi.tiw.beans.Transaction;
 import it.polimi.tiw.dao.TransactionDAO;
 import it.polimi.tiw.dao.AccountDAO;
-
+import it.polimi.tiw.controllers.AbstractServlet;
 @WebServlet("/account")
-public class AccountPage extends HttpServlet {
-    @Serial
-    private static final long serialVersionUID = 1L;
-    private Connection connection = null;
-    private TemplateEngine templateEngine;
-
-    public void init() throws ServletException {
-        connection = ConnectionHandler.getConnection(getServletContext());
-
-        //thymeleaf
-        ServletContext servletContext = getServletContext();
-        ServletContextTemplateResolver templateResolver = new ServletContextTemplateResolver(servletContext);
-        templateResolver.setTemplateMode(TemplateMode.HTML);
-        this.templateEngine = new TemplateEngine();
-        this.templateEngine.setTemplateResolver(templateResolver);
-        templateResolver.setSuffix(".html");
-    }
+public class AccountPage extends AbstractServlet {
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         HttpSession session = request.getSession();
@@ -111,7 +95,7 @@ public class AccountPage extends HttpServlet {
         ctx.setVariable("previousTransactions", previousTransactions);
         ctx.setVariable("account", account);
         ctx.setVariable("localDateTime", LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")));
-        String path = "/templates/account.html";
+        String path = "/WEB-INF/templates/account.html";
         templateEngine.process(path, ctx, response.getWriter());
     }
 

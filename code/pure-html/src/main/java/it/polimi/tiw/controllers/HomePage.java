@@ -24,25 +24,10 @@ import it.polimi.tiw.utils.ConnectionHandler;
 import it.polimi.tiw.dao.AccountDAO;
 import it.polimi.tiw.beans.Account;
 import it.polimi.tiw.beans.User;
+import it.polimi.tiw.controllers.AbstractServlet;
 
 @WebServlet("/home")
-public class HomePage extends HttpServlet {
-    @Serial
-    private static final long serialVersionUID = 1L;
-    private Connection connection = null;
-    private TemplateEngine templateEngine;
-
-    public void init() throws ServletException {
-        connection = ConnectionHandler.getConnection(getServletContext());
-
-        //thymeleaf
-        ServletContext servletContext = getServletContext();
-        ServletContextTemplateResolver templateResolver = new ServletContextTemplateResolver(servletContext);
-        templateResolver.setTemplateMode(TemplateMode.HTML);
-        this.templateEngine = new TemplateEngine();
-        this.templateEngine.setTemplateResolver(templateResolver);
-        templateResolver.setSuffix(".html");
-    }
+public class HomePage extends AbstractServlet {
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         HttpSession session = request.getSession();
@@ -68,7 +53,7 @@ public class HomePage extends HttpServlet {
         ctx.setVariable("accounts", accounts);
         ctx.setVariable("name", user.name());
         ctx.setVariable("surname", user.surname());
-        String path = "/templates/home.html";
+        String path = "/WEB-INF/templates/home.html";
         templateEngine.process(path, ctx, response.getWriter());
     }
 

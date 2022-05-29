@@ -5,7 +5,7 @@ import it.polimi.tiw.beans.User;
 public record Transaction(
         int id,
         Timestamp timestamp,
-        float amount,
+        float amount, //TODO understand if this can be  int or a float
         String reason,
         String origin,
         User sender,

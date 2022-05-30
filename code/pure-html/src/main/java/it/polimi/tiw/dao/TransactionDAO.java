@@ -97,7 +97,7 @@ public class TransactionDAO {
             preparedStatement.setString(2, String.valueOf(reason));
             preparedStatement.setString(3, String.valueOf(origin));
             preparedStatement.setString(4, String.valueOf(destination));
-            // first update
+            // first update: create transaction
             preparedStatement.executeUpdate();
 
             try (ResultSet rs = preparedStatement.getGeneratedKeys()) {
@@ -105,11 +105,11 @@ public class TransactionDAO {
                     id = rs.getInt(1);
                 }
             }
-            // second update
+            // second update: decrease balance of sender
             accountDAO.updateBalance(origin, -amount);
-            // third update
+            // third update: increase balance of sender
             accountDAO.updateBalance(destination, amount);
-            // retrieve last inserted id
+
             connection.commit();
         } catch (SQLException e) {
             connection.rollback();

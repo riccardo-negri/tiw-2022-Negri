@@ -1,11 +1,9 @@
 package it.polimi.tiw.dao;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 
 import it.polimi.tiw.beans.User;
+import it.polimi.tiw.dao.AccountDAO;
 
 public class UserDAO {
     private Connection connection;
@@ -61,6 +59,36 @@ public class UserDAO {
                     );
                 }
             }
+        }
+    }
+
+    public void createUser(String username, String email, String password, String name, String surname)
+            throws SQLException {
+        String query = "INSERT INTO user(username, email, password, name, surname) VALUES (?, ?, ?, ?, ?)";
+        connection.setAutoCommit(false);
+        AccountDAO accountDAO = new AccountDAO(connection);
+        int id;
+        try (PreparedStatement preparedStatement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);) {
+            preparedStatement.setString(1, username);
+            preparedStatement.setString(2, email);
+            preparedStatement.setString(3, password);
+            preparedStatement.setString(4, name);
+            preparedStatement.setString(5, surname);
+            // first update: create user
+            preparedStatement.executeUpdate();
+            try (ResultSet rs = preparedStatement.getGeneratedKeys()) {
+                if (rs.first()) {
+                    id = rs.getInt(1); // retrieve userID
+                    // second update: create account
+                    accountDAO.createAccount(id);
+                }
+            }
+            connection.commit();
+        } catch (SQLException e) {
+            connection.rollback();
+            throw e;
+        } finally {
+            connection.setAutoCommit(true);
         }
     }
 

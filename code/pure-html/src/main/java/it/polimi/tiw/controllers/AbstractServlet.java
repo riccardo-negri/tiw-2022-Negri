@@ -9,6 +9,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import java.io.Serial;
 import java.sql.Connection;
+import java.sql.SQLException;
 
 public abstract class AbstractServlet extends HttpServlet {
     @Serial
@@ -26,5 +27,13 @@ public abstract class AbstractServlet extends HttpServlet {
         this.templateEngine = new TemplateEngine();
         this.templateEngine.setTemplateResolver(templateResolver);
         templateResolver.setSuffix(".html");
+    }
+
+    public void destroy() {
+        try {
+            it.polimi.tiw.utils.ConnectionHandler.closeConnection(connection);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 }

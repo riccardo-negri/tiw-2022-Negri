@@ -32,10 +32,12 @@ public class Login extends AbstractServlet {
             response.sendRedirect("home");
             return;
         }
+        String registered = request.getParameter("registered");
 
         ServletContext servletContext = getServletContext();
         final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
-        String path = "/WEB-INF/templates/index.html";
+        ctx.setVariable("registered", registered);
+        String path = "/WEB-INF/templates/login.html";
         templateEngine.process(path, ctx, response.getWriter());
     }
 
@@ -52,14 +54,14 @@ public class Login extends AbstractServlet {
 
         if (username == null || username.equals("")) {
             ctx.setVariable("errorMsg", "No ID Inserted!");
-            String path = "/WEB-INF/templates/index.html";
+            String path = "/WEB-INF/templates/login.html";
             templateEngine.process(path, ctx, response.getWriter());
             return;
         }
 
         if (password == null || password.equals("")) {
             ctx.setVariable("errorMsg", "No Password Inserted!");
-            String path = "/WEB-INF/templates/index.html";
+            String path = "/WEB-INF/templates/login.html";
             templateEngine.process(path, ctx, response.getWriter());
             return;
         }
@@ -80,7 +82,7 @@ public class Login extends AbstractServlet {
         String path;
         if (user == null) {
             ctx.setVariable("errorMsg", "Incorrect username or password");
-            path = "/WEB-INF/templates/index.html";
+            path = "/WEB-INF/templates/login.html";
             templateEngine.process(path, ctx, response.getWriter());
         } else {
             request.getSession().setAttribute("user", user); //TODO set as session atteribute the ID so it is more scalable

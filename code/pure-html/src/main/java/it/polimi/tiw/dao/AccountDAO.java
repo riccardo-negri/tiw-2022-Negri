@@ -9,6 +9,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.sql.Timestamp;
+import java.util.Random;
 
 public class AccountDAO {
     private Connection connection;
@@ -30,7 +31,7 @@ public class AccountDAO {
                             result.getString("code"),
                             result.getFloat("balance"),
                             result.getInt("user"),
-                            lastActivity.toString().split(" ")[0]
+                            (lastActivity != null ? lastActivity.toString().split(" ")[0] : "No recent activity")
                     );
                     UserAccounts.add(a);
                 }
@@ -45,7 +46,7 @@ public class AccountDAO {
             preparedStatement.setString(1, String.valueOf(accountID));
             preparedStatement.setString(2, String.valueOf(accountID));
             try (ResultSet result = preparedStatement.executeQuery();) {
-                if (!result.isBeforeFirst()) // no results, there is no account
+                if (!result.isBeforeFirst()) // no results, there is no last activity so no transactions
                     return null;
                 else {
                     result.next();
@@ -102,6 +103,38 @@ public class AccountDAO {
         try (PreparedStatement preparedStatement = connection.prepareStatement(query);) {
             preparedStatement.setString(1, String.valueOf(delta));
             preparedStatement.setString(2, String.valueOf(accountID));
+            preparedStatement.executeUpdate();
+        }
+    }
+
+    public String findAvailableAccountCode() throws SQLException {
+        char[] chars = "0123456789".toCharArray();
+        Random rnd = new Random();
+        String query = "SELECT * FROM account WHERE code = ?";
+        while (true) {
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < 12; i++) { // Generate random account code
+                sb.append(chars[rnd.nextInt(chars.length)]);
+            }
+            String code = sb.toString();
+            try (PreparedStatement preparedStatement = connection.prepareStatement(query);) {
+                preparedStatement.setString(1, code);
+                try (ResultSet result = preparedStatement.executeQuery();) {
+                    if (!result.isBeforeFirst()) // no results, there are no users with hat email or username
+                        return code;
+                }
+            }
+
+        }
+    }
+    public void createAccount(int userID)
+            throws SQLException {
+        String query = "INSERT INTO account (code, balance, user) VALUES (?, ?, ?)";
+        String code = findAvailableAccountCode();
+        try (PreparedStatement preparedStatement = connection.prepareStatement(query);) {
+            preparedStatement.setString(1, code);
+            preparedStatement.setFloat(2, 0);
+            preparedStatement.setString(3, String.valueOf(userID));
             preparedStatement.executeUpdate();
         }
     }

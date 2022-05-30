@@ -82,7 +82,7 @@ for i in accounts:
             amount = random.randint(1, accounts_money[i])
         accounts_money[i] -= amount
         timestamp = str_time_prop("2016-1-1 00:00:00", "2022-6-20 00:00:00", "%Y-%m-%d %H:%M:%S")
-        mycursor.execute(sql_t, (timestamp, amount, "causale non specificata. {} -> {}".format(i, y), i, y))
+        mycursor.execute(sql_t, (timestamp, amount, "Transaction generated automatically: {} -> {}".format(i, y), i, y))
         mydb.commit()
         count_t += 1
 

@@ -30,7 +30,7 @@
 </head>
 
 <body class="g-sidenav-show  bg-gray-100">
-<div th:replace="/WEB-INF/templates/fragments/sidebar.html :: sidebar(activePage='Home', account=null)"></div>
+<div th:replace="/WEB-INF/templates/fragments/sidebar.html :: sidebar(activePage='Home', accountID=null, transactionID = null)"></div>
 <main class="main-content position-relative max-height-vh-100 h-100 border-radius-lg ">
     <!-- Navbar -->
     <div th:replace="/WEB-INF/templates/fragments/navbar.html :: navbar(currentPage='Home', name = ${name}, surname = ${surname})"></div>

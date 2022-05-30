@@ -3,10 +3,7 @@ package it.polimi.tiw.dao;
 import it.polimi.tiw.beans.Transaction;
 import it.polimi.tiw.dao.AccountDAO;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -90,29 +87,36 @@ public class TransactionDAO {
             }
         }
     }
-
-    public void addTransaction(int amount, String reason, int origin, int destination) throws SQLException {
+    public Integer addTransaction(int amount, String reason, int origin, int destination) throws SQLException {
         AccountDAO accountDAO = new AccountDAO(connection);
         String query = "INSERT INTO transaction (amount, reason, origin, destination) VALUES (?, ?, ?, ?)";
         connection.setAutoCommit(false);
-        try (PreparedStatement preparedStatement = connection.prepareStatement(query);) {
+        Integer id = null;
+        try (PreparedStatement preparedStatement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);) {
             preparedStatement.setString(1, String.valueOf(amount));
             preparedStatement.setString(2, String.valueOf(reason));
             preparedStatement.setString(3, String.valueOf(origin));
             preparedStatement.setString(4, String.valueOf(destination));
             // first update
             preparedStatement.executeUpdate();
+
+            try (ResultSet rs = preparedStatement.getGeneratedKeys()) {
+                if(rs.first()) {
+                    id = rs.getInt(1);
+                }
+            }
             // second update
             accountDAO.updateBalance(origin, -amount);
             // third update
             accountDAO.updateBalance(destination, amount);
-
+            // retrieve last inserted id
             connection.commit();
         } catch (SQLException e) {
             connection.rollback();
             throw e;
         } finally {
             connection.setAutoCommit(true);
+            return id;
         }
     }
 }

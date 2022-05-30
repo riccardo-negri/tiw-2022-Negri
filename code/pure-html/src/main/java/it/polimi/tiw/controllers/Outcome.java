@@ -18,20 +18,25 @@ import java.io.IOException;
 import java.sql.SQLException;
 
 import it.polimi.tiw.dao.TransactionDAO;
+import it.polimi.tiw.dao.ContactDAO;
+import it.polimi.tiw.beans.User;
+import it.polimi.tiw.beans.Transaction;
+import it.polimi.tiw.dao.AccountDAO;
+import it.polimi.tiw.beans.Account;
 
 @WebServlet("/transaction-outcome")
 public class Outcome extends AbstractServlet {
 
     /*
      *  with attribute "id=X" if the transaction went well
-     *  with attribute "failed=X" if the requirements where not fulfilled, X represents the reason of failure
+     *  with attribute "failed=X&origin=Y" if the requirements where not fulfilled, X represents the reason of failure and Y the account ID where we come from
      *  with attribute "added-contact=true" if the contact was successfully added
      */
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         HttpSession session = request.getSession();
         String id = (String) request.getParameter("id");
         String failed = (String) request.getParameter("failed");
-        String addedContact = (String) request.getParameter("added-contact");
+        String origin = request.getParameter("origin");
 
         ServletContext servletContext = getServletContext();
         final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
@@ -52,17 +57,44 @@ public class Outcome extends AbstractServlet {
             }
 
             TransactionDAO transactionDAO = new TransactionDAO(connection);
+            Transaction transaction;
             try {
-                ctx.setVariable("transaction", transactionDAO.getTransactionFromID(transactionID));
+                transaction = transactionDAO.getTransactionFromID(transactionID);
+                ctx.setVariable("transaction", transaction);
             } catch (SQLException e) {
                 throw new RuntimeException(e);
             }
-            //
+
+            User user = (it.polimi.tiw.beans.User) session.getAttribute("user");
+            ContactDAO contactDAO = new ContactDAO(connection);
+            AccountDAO accountDAO = new AccountDAO(connection);
+            Account accountDestination;
+            Account accountOrigin;
+            try {
+                accountDestination = accountDAO.getAccountFromCode(transaction.destination());
+                accountOrigin = accountDAO.getAccountFromCode(transaction.origin());
+                ctx.setVariable("addToContact", contactDAO.isAccountInContacts(user.id(), accountDestination.id()));
+                ctx.setVariable("origin", accountOrigin);
+                ctx.setVariable("destination", accountDestination);
+                ctx.setVariable("user", user);
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+
         } else if (failed != null && !failed.equals("")) { // enter here if the transaction was NOT successful
+            int originID;
+            try {
+                originID = Integer.parseInt(origin);
+            } catch (NumberFormatException | NullPointerException e) {
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Incorrect param values");
+                return;
+            }
+            ctx.setVariable("account", originID);
             ctx.setVariable("failMessage", failed);
         } else {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Required parameters missing");
         }
+
         templateEngine.process(path, ctx, response.getWriter());
     }
 

@@ -34,6 +34,7 @@ import it.polimi.tiw.beans.Account;
 import it.polimi.tiw.beans.Transaction;
 import it.polimi.tiw.dao.TransactionDAO;
 import it.polimi.tiw.dao.AccountDAO;
+import it.polimi.tiw.dao.ContactDAO;
 import it.polimi.tiw.controllers.AbstractServlet;
 @WebServlet("/account")
 public class AccountPage extends AbstractServlet {
@@ -54,11 +55,15 @@ public class AccountPage extends AbstractServlet {
 
         TransactionDAO transactionDAO = new TransactionDAO(connection);
         AccountDAO accountDAO = new AccountDAO(connection);
+        ContactDAO contactDAO = new ContactDAO(connection);
+
         Account account;
         List<Transaction> userTransactions;
+        List<it.polimi.tiw.beans.Contact> contacts;
         try {
             userTransactions = transactionDAO.findTransactions(accountID);
             account = accountDAO.getAccountFromID(accountID);
+            contacts = contactDAO.findContactsFromUserID(user.id());
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -69,6 +74,7 @@ public class AccountPage extends AbstractServlet {
         ctx.setVariable("surname", user.surname());
         ctx.setVariable("user", user);
         ctx.setVariable("transactions", userTransactions);
+        ctx.setVariable("contacts", contacts);
         List<Transaction> lastMonthTransactions = new ArrayList<>();
         List<Transaction> lastYearTransactions = new ArrayList<>();
         List<Transaction> previousTransactions = new ArrayList<>();

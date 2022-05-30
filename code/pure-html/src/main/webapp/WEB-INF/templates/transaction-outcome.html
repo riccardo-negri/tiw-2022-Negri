@@ -30,10 +30,10 @@
 </head>
 
 <body class="g-sidenav-show  bg-gray-100">
-<div th:replace="/WEB-INF/templates/fragments/sidebar.html :: sidebar(activePage='Outcome')"></div>
+<div th:replace="/WEB-INF/templates/fragments/sidebar.html :: sidebar(activePage='Outcome', account=${origin})"></div>
 <main class="main-content position-relative max-height-vh-100 h-100 border-radius-lg ">
     <!-- Navbar -->
-    <div th:replace="/WEB-INF/templates/fragments/navbar.html :: navbar(currentPage='Outcome', name = ${name}, surname = ${surname})"></div>
+    <div th:replace="/WEB-INF/templates/fragments/navbar.html :: navbar(currentPage='Outcome', name = ${user.name}, surname = ${user.surname})"></div>
     <!-- End Navbar -->
     <div class="container-fluid pb-4">
         <!-- NEW -->
@@ -43,34 +43,74 @@
                     <div class="card-header pb-0">
                         <h6>Last Transaction Outcome</h6>
                     </div>
-                    <div  th:if="${failMessage != null}" class="card-body px-4 pt-0 pb-2">
+                    <div th:if="${failMessage != null}" class="card-body px-4 pt-0 pb-2">
                         <div class="alert alert-warning m-auto" role="alert">
                             <strong>The transaction failed.</strong> Below you can find the reason
                         </div>
                         <div class="pt-2">
-                            <p th:text="${failMessage}">The transaction failed because the receiver address was wrong</p>
+                            <p th:text="${failMessage}">The transaction failed because the receiver address was
+                                wrong</p>
                         </div>
                     </div>
                     <div th:if="${transaction != null}" class="card-body px-4 pt-0 pb-2">
                         <div class="alert alert-success m-auto" role="alert">
                             <strong>The transaction was successfully executed.</strong> Below you can find the details
                         </div>
-                        <div class="pt-2">
-                            <p class="mb-0">Details:</p>
-                            <ul>
-                                <li th:text="'Transaction id: ' + ${transaction.id}"></li>
-                                <li th:text="'Transaction amount: ' + ${transaction.amount}"></li>
-                                <li th:text="'Transaction timestamp: ' + ${transaction.timestamp}"></li>
-                            </ul>
+                        <div class="py-2">
+                            <div class="d-flex flex-column">
+                                <h6 class="mt-2 mb-2 text-sm">Transaction details:</h6>
+                                <span class="mb-2 text-xs">Transaction ID: <span
+                                        class="text-dark font-weight-bold ms-sm-2"
+                                        th:text="${transaction.id}"></span></span>
+                                <span class="mb-2 text-xs">Transaction amount: <span
+                                        class="text-dark ms-sm-2 font-weight-bold"
+                                        th:text="'$ ' + ${#numbers.formatDecimal(transaction.amount, 0, 'COMMA', 2,'POINT')}"></span></span>
+                                <span class="mb-2 text-xs">Transaction reason: <span
+                                        class="text-dark ms-sm-2 font-weight-bold"
+                                        th:text="${transaction.reason}"></span></span>
+                                <span class="mb-2 text-xs">Transaction timestamp: <span
+                                        class="text-dark ms-sm-2 font-weight-bold"
+                                        th:text="${transaction.timestamp.toString().substring(0, transaction.timestamp.toString().length()-2)}"></span></span>
+
+                                <h6 class="mt-2 mb-2 text-sm">Origin:</h6>
+                                <span class="mb-2 text-xs">Account code: <span
+                                        class="text-dark ms-sm-2 font-weight-bold"
+                                        th:text="${transaction.origin.substring(0,4)} + ' ' +  ${transaction.origin.substring(4,8)} + ' ' + ${transaction.origin.substring(8,12)}"></span></span>
+                                <span class="mb-2 text-xs">Account owner: <span
+                                        class="text-dark ms-sm-2 font-weight-bold"
+                                        th:text="${transaction.sender.name} + ' ' + ${transaction.sender.surname()}"></span></span>
+                                <span class="mb-2 text-xs">Account balance before: <span
+                                        class="text-dark ms-sm-2 font-weight-bold"
+                                        th:text="'$ ' + ${#numbers.formatDecimal(origin.balance + transaction.amount, 0, 'COMMA', 2,'POINT')}"></span></span>
+                                <span class="mb-2 text-xs">Account balance after: <span
+                                        class="text-dark ms-sm-2 font-weight-bold"
+                                        th:text="'$ ' + ${#numbers.formatDecimal(origin.balance, 0, 'COMMA', 2,'POINT')}"></span></span>
+
+
+                                <h6 class="mt-2 mb-2 text-sm">Destination:</h6>
+                                <span class="mb-2 text-xs">Account code: <span
+                                        class="text-dark ms-sm-2 font-weight-bold"
+                                        th:text="${transaction.destination.substring(0,4)} + ' ' +  ${transaction.destination.substring(4,8)} + ' ' + ${transaction.destination.substring(8,12)}"></span></span>
+                                <span class="mb-2 text-xs">Account owner: <span
+                                        class="text-dark ms-sm-2 font-weight-bold"
+                                        th:text="${transaction.receiver.name} + ' ' + ${transaction.receiver.surname()}"></span></span>
+                                <span class="mb-2 text-xs">Account balance before: <span
+                                        class="text-dark ms-sm-2 font-weight-bold"
+                                        th:text="'$ ' + ${#numbers.formatDecimal(destination.balance - transaction.amount, 0, 'COMMA', 2,'POINT')}"></span></span>
+                                <span class="mb-2 text-xs">Account balance after: <span
+                                        class="text-dark ms-sm-2 font-weight-bold"
+                                        th:text="'$ ' + ${#numbers.formatDecimal(destination.balance, 0, 'COMMA', 2,'POINT')}"></span></span>
+                            </div>
                         </div>
                     </div>
                     <div class="card-body px-4 pt-0 pb-2">
-                        <form>
-                            <button type="button" class="btn bg-gradient-primary">Add Marco's Account to your Contacts</button>
+                        <form th:if="${addToContact == false}" role="form" method="post" th:action="@{/add-contact}">
+                            <input type="hidden" name="origin" th:value="${origin.id}">
+                            <input type="hidden" name="account" th:value="${destination.id}">
+                            <button type="submit" class="btn bg-gradient-primary"
+                                    th:text="'Add ' + ${transaction.receiver().name()} + ' ' + ${transaction.receiver().surname()} + ' account to your contacts' "></button>
+                            <p>By clicking this button you will be automatically redirected to your Account page</p>
                         </form>
-                        <div class="alert alert-success m-auto" role="alert">
-                            Successfully added Marco's account to your Contacts
-                        </div>
                     </div>
                 </div>
             </div>

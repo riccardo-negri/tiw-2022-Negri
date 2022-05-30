@@ -13,56 +13,47 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import it.polimi.tiw.dao.AccountDAO;
+import it.polimi.tiw.dao.ContactDAO;
 import it.polimi.tiw.dao.TransactionDAO;
+import it.polimi.tiw.beans.User;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
 import it.polimi.tiw.controllers.AbstractServlet;
 
-@WebServlet("/make-transaction")
-public class MakeTransaction extends AbstractServlet {
+@WebServlet("/add-contact")
+public class AddContact extends AbstractServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         doPost(request,response);
     }
 
 
+    /*
+    *   Parameters:
+    *   - account (ID of the account to add to the contact list of the user)
+    *   - origin (Account ID for the page to go back to)
+     */
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        HttpSession session = request.getSession();
+        User user = (it.polimi.tiw.beans.User) session.getAttribute("user");
 
         //TODO check that all these are safe
-        HttpSession session = request.getSession();
-        String originCode = request.getParameter("origin-code");
-        String receiverUsername = request.getParameter("receiver-username");
-        String destinationCode = request.getParameter("destination-code");
-        String reason = request.getParameter("reason");
-        int amount = Integer.parseInt(request.getParameter("amount"));
+        String account = request.getParameter("account");
+        String origin = request.getParameter("origin");
 
         //TODO check that the sender has the money and that the receiver username owns the receiver account
 
-        // get the account IDs
-        AccountDAO accountDAO = new AccountDAO(connection);
-        int origin;
-        int destination;
+        // execute
+        ContactDAO contactDAO = new ContactDAO(connection);
         try {
-            origin = accountDAO.getAccountFromCode(originCode).id();
-            destination = accountDAO.getAccountFromCode(destinationCode).id();
+            contactDAO.addContact(user.id(), Integer.parseInt(account));
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-        // execute the transaction
-        TransactionDAO transactionDAO = new TransactionDAO(connection);
-        int transactionID;
-        try {
-            transactionID = transactionDAO.addTransaction(amount, reason, origin, destination);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-
         // Return view
-        String path = getServletContext().getContextPath() + "/transaction-outcome" + "?id=" + transactionID;
-        request.setAttribute("result", "Everything went well");
+        String path = getServletContext().getContextPath() + "/account?id=" + origin;
         response.sendRedirect(path);
     }
 

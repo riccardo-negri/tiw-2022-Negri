@@ -12,7 +12,7 @@ NAMES = ["Francesco", "Sofia", "Alessandro", "Giulia", "Andrea",
         "Aurora", "Lorenzo", "Emma", "Mattia", "Giorgia"]
 SURNAMES = ["Rossi", "Russo", "Ferrari", "Esposito", "Bianchi",
             "Colombo", "Ricci", "Gallo", "Conti", "Giordano"]
-DEFAULT_PASSWORD = "pass"
+DEFAULT_PASSWORD = "$argon2i$v=19$m=65536,t=10,p=1$6SIZOoIuKS/r6yGaV31CAw$kpwbR1BPl8ONM1uiQjFv7teGLFAi1ApZetKfgSpK2cc" # password: pass
 
 def str_time_prop(start, end, time_format):
     stime = time.mktime(time.strptime(start, time_format))
@@ -33,7 +33,7 @@ mycursor = mydb.cursor()
 accounts = []
 accounts_money = {}
 accounts_user = {}
-sql_u = "INSERT INTO user(username, email, password, name, surname) VALUES (%s, %s, %s, %s, %s)"
+sql_u = "INSERT INTO user(username, email, encoded, name, surname) VALUES (%s, %s, %s, %s, %s)"
 sql_a = "INSERT INTO account (code, balance, user) VALUES (%s, %s, %s)"
 sql_t = "INSERT INTO transaction (timestamp, amount, reason, origin, destination) VALUES (%s, %s, %s, %s, %s)"
 sql_c = "INSERT INTO contact (owner, element) VALUES (%s, %s)"

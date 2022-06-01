@@ -141,13 +141,14 @@ Statement per creare il database:
 CREATE DATABASE tiw_db;
 \end{minted}
 
-Statements per creare le tabelle:
+Statements per creare le tabelle: 
+encode perchè uso Argon2, così anche brute force resistant
 \begin{minted}{mysql}
 CREATE TABLE `tiw_db`.`user` (
 	`id` INT NOT NULL AUTO_INCREMENT,
 	`username` VARCHAR(45) NOT NULL UNIQUE,
 	`email` VARCHAR(45) NOT NULL UNIQUE,
-	`password` VARCHAR(45) NOT NULL,
+	`encoded` VARCHAR(255) NOT NULL,
 	`name` VARCHAR(45) NOT NULL,
 	`surname` VARCHAR(45) NOT NULL,
 	PRIMARY KEY (`id`)

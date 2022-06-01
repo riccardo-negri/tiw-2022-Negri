@@ -3,6 +3,7 @@ package it.polimi.tiw.dao;
 import java.sql.*;
 
 import it.polimi.tiw.beans.User;
+import it.polimi.tiw.utils.PasswordHashing;
 import it.polimi.tiw.dao.AccountDAO;
 
 public class UserDAO {
@@ -35,15 +36,22 @@ public class UserDAO {
     }
 
     public User checkUserLogin(String username, String password) throws SQLException {
-        String query = "SELECT * FROM user WHERE username = ? AND password = ?";
+        String query = "SELECT * FROM user WHERE username = ?";
         try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setString(1, username);
-            preparedStatement.setString(2, password);
             try (ResultSet result = preparedStatement.executeQuery()) {
-                if (!result.isBeforeFirst()) // no results, there are no users with that username or the password is incorrect
+                if (!result.isBeforeFirst()) // no results, there are no users with that username
                     return null;
                 else {
                     result.next();
+
+                    // check the correctness of the password
+                    String encoded = result.getString("encoded");
+                    if (!PasswordHashing.verify(encoded, password)) {
+                        return null; // wrong password
+                    }
+
+                    // authenticated correctly
                     return new User(
                             result.getInt("id"),
                             result.getString("username"),
@@ -79,14 +87,15 @@ public class UserDAO {
 
     public void createUser(String username, String email, String password, String name, String surname)
             throws SQLException {
-        String query = "INSERT INTO user(username, email, password, name, surname) VALUES (?, ?, ?, ?, ?)";
+        String query = "INSERT INTO user(username, email, encoded, name, surname) VALUES (?, ?, ?, ?, ?)";
         connection.setAutoCommit(false);
         AccountDAO accountDAO = new AccountDAO(connection);
         int id;
         try (PreparedStatement preparedStatement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
+            String encoded = PasswordHashing.encode(password);
             preparedStatement.setString(1, username);
             preparedStatement.setString(2, email);
-            preparedStatement.setString(3, password);
+            preparedStatement.setString(3, encoded);
             preparedStatement.setString(4, name);
             preparedStatement.setString(5, surname);
             // first update: create user

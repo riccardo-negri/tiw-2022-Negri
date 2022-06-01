@@ -1,14 +1,10 @@
 package it.polimi.tiw.controllers;
 
 import java.io.IOException;
-import java.sql.Connection;
 import java.sql.SQLException;
 
-import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -19,9 +15,6 @@ import it.polimi.tiw.utils.ParameterValidator;
 import it.polimi.tiw.beans.User;
 import it.polimi.tiw.beans.Account;
 import it.polimi.tiw.dao.UserDAO;
-import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.templatemode.TemplateMode;
-import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
 import it.polimi.tiw.controllers.AbstractServlet;
 
 @WebServlet("/make-transaction")

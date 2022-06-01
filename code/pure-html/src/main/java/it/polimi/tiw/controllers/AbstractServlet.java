@@ -7,12 +7,10 @@ import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
-import java.io.Serial;
 import java.sql.Connection;
 import java.sql.SQLException;
 
 public abstract class AbstractServlet extends HttpServlet {
-    @Serial
     protected static final long serialVersionUID = 1L;
     protected Connection connection = null;
     protected TemplateEngine templateEngine;

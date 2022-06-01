@@ -52,7 +52,12 @@
       <artifactId>jakarta.ejb-api</artifactId>
       <version>4.0.0-RC2</version>
     </dependency>
-    <!-- https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-catalina -->
+    <!-- https://mvnrepository.com/artifact/de.mkammerer/argon2-jvm/2.11 -->
+    <dependency>
+      <groupId>de.mkammerer</groupId>
+      <artifactId>argon2-jvm</artifactId>
+      <version>2.11</version>
+    </dependency>
   </dependencies>
   <build>
     <sourceDirectory>src</sourceDirectory>

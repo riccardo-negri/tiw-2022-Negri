@@ -7,9 +7,9 @@ import javax.servlet.ServletContext;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import org.thymeleaf.context.WebContext;
+import it.polimi.tiw.utils.ParameterValidator;
 
 import it.polimi.tiw.dao.UserDAO;
 import it.polimi.tiw.beans.User;
@@ -35,14 +35,14 @@ public class Login extends AbstractServlet {
         String username = request.getParameter("username");
         String password = request.getParameter("password");
 
-        if (username == null || username.equals("")) {
+        if (!ParameterValidator.validate(username)) {
             ctx.setVariable("errorMsg", "No ID Inserted!");
             String path = "/WEB-INF/templates/login.html";
             templateEngine.process(path, ctx, response.getWriter());
             return;
         }
 
-        if (password == null || password.equals("")) {
+        if (!ParameterValidator.validate(password)) {
             ctx.setVariable("errorMsg", "No Password Inserted!");
             String path = "/WEB-INF/templates/login.html";
             templateEngine.process(path, ctx, response.getWriter());
@@ -55,7 +55,7 @@ public class Login extends AbstractServlet {
         try {
             user = userDao.checkUserLogin(username, password);
         } catch (SQLException e) {
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,"Not Possible to check credentials");
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Not Possible to check credentials");
             return;
         }
 

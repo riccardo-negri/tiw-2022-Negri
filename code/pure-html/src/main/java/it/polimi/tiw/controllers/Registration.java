@@ -1,8 +1,6 @@
 package it.polimi.tiw.controllers;
 
 import java.io.IOException;
-import java.io.Serial;
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -15,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.thymeleaf.context.WebContext;
 
 import it.polimi.tiw.dao.UserDAO;
+import it.polimi.tiw.utils.ParameterValidator;
 import it.polimi.tiw.controllers.AbstractServlet;
 
 @WebServlet("/registration")
@@ -41,32 +40,32 @@ public class Registration extends AbstractServlet {
         String passwordControl = request.getParameter("password-control");
 
         // check existence of every parameter
-        if (name == null || name.equals("")) {
+        if (!ParameterValidator.validate(name)) {
             ctx.setVariable("errorMsg", "No name inserted!");
             templateEngine.process(path, ctx, response.getWriter());
             return;
         }
-        if (surname == null || surname.equals("")) {
+        if (!ParameterValidator.validate(surname)) {
             ctx.setVariable("errorMsg", "No surname inserted!");
             templateEngine.process(path, ctx, response.getWriter());
             return;
         }
-        if (username == null || username.equals("")) {
+        if (!ParameterValidator.validate(username)) {
             ctx.setVariable("errorMsg", "No username inserted!");
             templateEngine.process(path, ctx, response.getWriter());
             return;
         }
-        if (email == null || email.equals("")) {
+        if (!ParameterValidator.validate(email)) {
             ctx.setVariable("errorMsg", "No email inserted!");
             templateEngine.process(path, ctx, response.getWriter());
             return;
         }
-        if (password == null || password.equals("")) {
+        if (!ParameterValidator.validate(password)) {
             ctx.setVariable("errorMsg", "No password inserted!");
             templateEngine.process(path, ctx, response.getWriter());
             return;
         }
-        if (passwordControl == null || passwordControl.equals("")) {
+        if (!ParameterValidator.validate(passwordControl)) {
             ctx.setVariable("errorMsg", "No password-control Inserted!");
             templateEngine.process(path, ctx, response.getWriter());
             return;

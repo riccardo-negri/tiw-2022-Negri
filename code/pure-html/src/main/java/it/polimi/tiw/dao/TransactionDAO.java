@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TransactionDAO {
-    private Connection connection;
+    private final Connection connection;
 
     public TransactionDAO(Connection connection) {
         this.connection = connection;
@@ -18,10 +18,10 @@ public class TransactionDAO {
         List<Transaction> userTransactions = new ArrayList<Transaction>();
         String query = "SELECT  * FROM transaction JOIN account AS a1 ON transaction.origin = a1.id JOIN account AS a2 ON transaction.destination = a2.id " +
                 "JOIN user AS u1 ON a1.user = u1.id JOIN user AS u2 ON a2.user = u2.id WHERE origin = ? OR destination = ? ORDER BY transaction.timestamp DESC";
-        try (PreparedStatement preparedStatement = connection.prepareStatement(query);) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setString(1, String.valueOf(userID));
             preparedStatement.setString(2, String.valueOf(userID));
-            try (ResultSet result = preparedStatement.executeQuery();) {
+            try (ResultSet result = preparedStatement.executeQuery()) {
                 while (result.next()) {
                     Transaction t = new Transaction(
                             result.getInt("id"),
@@ -54,9 +54,9 @@ public class TransactionDAO {
 
     public Transaction getTransactionFromID(int transactionID) throws SQLException {
         String query = "SELECT  * FROM transaction JOIN account AS a1 ON transaction.origin = a1.id JOIN account AS a2 ON transaction.destination = a2.id JOIN user AS u1 ON a1.user = u1.id JOIN user AS u2 ON a2.user = u2.id WHERE transaction.id = ?";
-        try (PreparedStatement preparedStatement = connection.prepareStatement(query);) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setString(1, String.valueOf(transactionID));
-            try (ResultSet result = preparedStatement.executeQuery();) {
+            try (ResultSet result = preparedStatement.executeQuery()) {
                 if (!result.isBeforeFirst()) // no results, there is no transaction
                     return null;
                 else {
@@ -92,7 +92,7 @@ public class TransactionDAO {
         String query = "INSERT INTO transaction (amount, reason, origin, destination) VALUES (?, ?, ?, ?)";
         connection.setAutoCommit(false);
         Integer id = null;
-        try (PreparedStatement preparedStatement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
             preparedStatement.setString(1, String.valueOf(amount));
             preparedStatement.setString(2, String.valueOf(reason));
             preparedStatement.setString(3, String.valueOf(origin));
@@ -116,8 +116,8 @@ public class TransactionDAO {
             throw e;
         } finally {
             connection.setAutoCommit(true);
-            return id;
         }
+        return id;
     }
 
     public Timestamp getLastActivity(int accountID) throws SQLException {

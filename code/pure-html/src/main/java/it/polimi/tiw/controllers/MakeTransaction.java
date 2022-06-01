@@ -40,14 +40,17 @@ public class MakeTransaction extends AbstractServlet {
         String originCode = request.getParameter("origin-code").strip();
 
         // check for origin parameter, so it can be used later in the redirect
-        if (!ParameterValidator.validate(originCode)) { // check existence of origin account
+        // check existence of origin account
+        if (!ParameterValidator.validate(originCode)) {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing value for origin-code");
             return;
         }
-        if (!(originCode.matches("\\d{12}"))) {  // check validity of origin account
+        // check validity of origin account
+        if (!(originCode.matches("\\d{12}"))) {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Origin account not well formatted, this request was not legit");
             return;
         }
+        // check that the origin account is owned by the session user
         Account originAccount;
         try {
             originAccount = accountDAO.getAccountFromCode(originCode);
@@ -55,7 +58,7 @@ public class MakeTransaction extends AbstractServlet {
             response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Not possible to retrieve account information");
             return;
         }
-        if (originAccount == null || originAccount.user() != user.id()) { // check that the origin account is owned by the session user
+        if (originAccount == null || originAccount.user() != user.id()) {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Origin account not allowed, this request was not legit");
             return;
         }
@@ -132,7 +135,7 @@ public class MakeTransaction extends AbstractServlet {
             return;
         }
 
-        // check that sender and receiver account is not the same account
+        // check that sender and receiver account are not the same account
         if (originAccount.id() == destinationAccount.id()) {
             String path = getServletContext().getContextPath() + "/transaction-outcome?origin=" + originAccount.id() + "&failed=" + "You can not send money to yourself.";
             response.sendRedirect(path);
@@ -149,7 +152,7 @@ public class MakeTransaction extends AbstractServlet {
             return;
         }
 
-        // Everything went well
+        // everything went well
         String path = getServletContext().getContextPath() + "/transaction-outcome" + "?id=" + transactionID;
         response.sendRedirect(path);
     }

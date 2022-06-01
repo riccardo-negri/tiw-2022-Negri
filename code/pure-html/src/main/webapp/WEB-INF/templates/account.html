@@ -17,16 +17,16 @@
 
 <head>
     <meta charset="utf-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <link rel="apple-touch-icon" sizes="76x76" href="../img/apple-icon.png">
-    <link rel="icon" type="image/png" href="../img/favicon.png">
+    <link rel="icon" type="image/png" href="assets/img/logo_white.png">
     <title>
-        Soft UI Dashboard by Creative Tim
+        Bank WebApp by Riccardo Negri
     </title>
-    <!--     Font     -->
+
+    <!-- Font -->
     <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet"/>
+
     <!-- CSS Files -->
-    <link id="pagestyle" th:href="@{/assets/css/soft-ui-dashboard.css}" rel="stylesheet"/>
+    <link id="pagestyle" th:href="@{/assets/css/style.css}" rel="stylesheet"/>
 </head>
 
 <body class="g-sidenav-show  bg-gray-100">
@@ -122,14 +122,13 @@
                                                 th:text="${transaction.sender.name} + ' ' + ${transaction.sender.surname}">
                                                 Apple</h6>
                                             <span class="text-xs"
-                                                  th:text="'Received from ' + ${transaction.origin.substring(0,4)} + ' ' +  ${transaction.origin.substring(4,8)} + ' ' + ${transaction.origin.substring(8,12)} + ' on ' + ${transaction.timestamp.toString().substring(0, transaction.timestamp.toString().length()-2)} ">27 March 2020, at 04:30 AM</span>
+                                                  th:text="'Received from ' + ${transaction.origin.substring(0,4)} + ' ' +  ${transaction.origin.substring(4,8)} + ' ' + ${transaction.origin.substring(8,12)} + ' on ' + ${transaction.timestamp.toString().substring(0, transaction.timestamp.toString().length()-2)} "></span>
                                             <span class="text-xs" th:text="'Reason: ' + ${transaction.reason()}"></span>
 
                                         </div>
                                     </div>
                                     <div class="d-flex align-items-center text-success text-gradient text-sm font-weight-bold"
                                          th:text="'+ $ ' + ${#numbers.formatDecimal(transaction.amount, 0, 'COMMA', 2,'POINT')}">
-                                        + $ 2,000
                                     </div>
                                 </li>
                                 <li class="list-group-item border-0 d-flex justify-content-between ps-0 mb-2 border-radius-lg"
@@ -147,13 +146,12 @@
                                                 th:text="${transaction.receiver.name} + ' ' + ${transaction.receiver.surname}">
                                                 Netflix</h6>
                                             <span class="text-xs"
-                                                  th:text="'Sent to ' + ${transaction.destination.substring(0,4)} + ' ' +  ${transaction.destination.substring(4,8)} + ' ' + ${transaction.destination.substring(8,12)} + ' on ' + ${transaction.timestamp.toString().substring(0, transaction.timestamp.toString().length()-2)} ">From 549623406592 on 27 March 2020, at 12:30 PM</span>
+                                                  th:text="'Sent to ' + ${transaction.destination.substring(0,4)} + ' ' +  ${transaction.destination.substring(4,8)} + ' ' + ${transaction.destination.substring(8,12)} + ' on ' + ${transaction.timestamp.toString().substring(0, transaction.timestamp.toString().length()-2)} "></span>
                                             <span class="text-xs" th:text="'Reason: ' + ${transaction.reason()}"></span>
                                         </div>
                                     </div>
                                     <div class="d-flex align-items-center text-danger text-gradient text-sm font-weight-bold"
                                          th:text="'- $ ' + ${#numbers.formatDecimal(transaction.amount, 0, 'COMMA', 2,'POINT')}">
-                                        - $ 2,500
                                     </div>
                                 </li>
                             </ul>
@@ -175,13 +173,12 @@
                                                 th:text="${transaction.sender.name} + ' ' + ${transaction.sender.surname}">
                                                 Apple</h6>
                                             <span class="text-xs"
-                                                  th:text="'Received from ' + ${transaction.origin.substring(0,4)} + ' ' +  ${transaction.origin.substring(4,8)} + ' ' + ${transaction.origin.substring(8,12)} + ' on ' + ${transaction.timestamp.toString().substring(0, transaction.timestamp.toString().length()-2)} ">27 March 2020, at 04:30 AM</span>
+                                                  th:text="'Received from ' + ${transaction.origin.substring(0,4)} + ' ' +  ${transaction.origin.substring(4,8)} + ' ' + ${transaction.origin.substring(8,12)} + ' on ' + ${transaction.timestamp.toString().substring(0, transaction.timestamp.toString().length()-2)} "></span>
                                             <span class="text-xs" th:text="'Reason: ' + ${transaction.reason()}"></span>
                                         </div>
                                     </div>
                                     <div class="d-flex align-items-center text-success text-gradient text-sm font-weight-bold"
                                          th:text="'+ $ ' + ${#numbers.formatDecimal(transaction.amount, 0, 'COMMA', 2,'POINT')}">
-                                        + $ 2,000
                                     </div>
                                 </li>
                                 <li class="list-group-item border-0 d-flex justify-content-between ps-0 mb-2 border-radius-lg"
@@ -199,17 +196,17 @@
                                                 th:text="${transaction.receiver.name} + ' ' + ${transaction.receiver.surname}">
                                                 Netflix</h6>
                                             <span class="text-xs"
-                                                  th:text="'Sent to ' + ${transaction.destination.substring(0,4)} + ' ' +  ${transaction.destination.substring(4,8)} + ' ' + ${transaction.destination.substring(8,12)} + ' on ' + ${transaction.timestamp.toString().substring(0, transaction.timestamp.toString().length()-2)} ">From 549623406592 on 27 March 2020, at 12:30 PM</span>
+                                                  th:text="'Sent to ' + ${transaction.destination.substring(0,4)} + ' ' +  ${transaction.destination.substring(4,8)} + ' ' + ${transaction.destination.substring(8,12)} + ' on ' + ${transaction.timestamp.toString().substring(0, transaction.timestamp.toString().length()-2)} "></span>
                                             <span class="text-xs" th:text="'Reason: ' + ${transaction.reason()}"></span>
                                         </div>
                                     </div>
                                     <div class="d-flex align-items-center text-danger text-gradient text-sm font-weight-bold"
                                          th:text="'- $ ' + ${#numbers.formatDecimal(transaction.amount, 0, 'COMMA', 2,'POINT')}">
-                                        - $ 2,500
                                     </div>
                                 </li>
                             </ul>
-                            <h6 class="text-uppercase text-body text-xs font-weight-bolder my-3">Previous</h6>
+                            <h6 th:if="${previousTransactions.size > 0}"
+                                class="text-uppercase text-body text-xs font-weight-bolder my-3">Previous</h6>
                             <ul class="list-group" th:each="transaction: ${previousTransactions}">
                                 <li class="list-group-item border-0 d-flex justify-content-between ps-0 mb-2 border-radius-lg"
                                     th:if="${account.code == transaction.destination}">
@@ -226,13 +223,12 @@
                                                 th:text="${transaction.sender.name} + ' ' + ${transaction.sender.surname}">
                                                 Apple</h6>
                                             <span class="text-xs"
-                                                  th:text="'Received from ' + ${transaction.origin.substring(0,4)} + ' ' +  ${transaction.origin.substring(4,8)} + ' ' + ${transaction.origin.substring(8,12)} + ' on ' + ${transaction.timestamp.toString().substring(0, transaction.timestamp.toString().length()-2)} ">27 March 2020, at 04:30 AM</span>
+                                                  th:text="'Received from ' + ${transaction.origin.substring(0,4)} + ' ' +  ${transaction.origin.substring(4,8)} + ' ' + ${transaction.origin.substring(8,12)} + ' on ' + ${transaction.timestamp.toString().substring(0, transaction.timestamp.toString().length()-2)} "></span>
                                             <span class="text-xs" th:text="'Reason: ' + ${transaction.reason()}"></span>
                                         </div>
                                     </div>
                                     <div class="d-flex align-items-center text-success text-gradient text-sm font-weight-bold"
                                          th:text="'+ $ ' + ${#numbers.formatDecimal(transaction.amount, 0, 'COMMA', 2,'POINT')}">
-                                        + $ 2,000
                                     </div>
                                 </li>
                                 <li class="list-group-item border-0 d-flex justify-content-between ps-0 mb-2 border-radius-lg"
@@ -250,13 +246,12 @@
                                                 th:text="${transaction.receiver.name} + ' ' + ${transaction.receiver.surname}">
                                                 Netflix</h6>
                                             <span class="text-xs"
-                                                  th:text="'Sent to ' + ${transaction.destination.substring(0,4)} + ' ' +  ${transaction.destination.substring(4,8)} + ' ' + ${transaction.destination.substring(8,12)} + ' on ' + ${transaction.timestamp.toString().substring(0, transaction.timestamp.toString().length()-2)} ">From 549623406592 on 27 March 2020, at 12:30 PM</span>
+                                                  th:text="'Sent to ' + ${transaction.destination.substring(0,4)} + ' ' +  ${transaction.destination.substring(4,8)} + ' ' + ${transaction.destination.substring(8,12)} + ' on ' + ${transaction.timestamp.toString().substring(0, transaction.timestamp.toString().length()-2)} "></span>
                                             <span class="text-xs" th:text="'Reason: ' + ${transaction.reason()}"></span>
                                         </div>
                                     </div>
                                     <div class="d-flex align-items-center text-danger text-gradient text-sm font-weight-bold"
                                          th:text="'- $ ' + ${#numbers.formatDecimal(transaction.amount, 0, 'COMMA', 2,'POINT')}">
-                                        - $ 2,500
                                     </div>
                                 </li>
                             </ul>

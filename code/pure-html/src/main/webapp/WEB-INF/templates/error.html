@@ -17,16 +17,16 @@
 
 <head>
   <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <link rel="apple-touch-icon" sizes="76x76" href="../img/apple-icon.png">
-  <link rel="icon" type="image/png" href="../img/favicon.png">
+  <link rel="icon" type="image/png" href="assets/img/logo_white.png">
   <title>
-    Soft UI Dashboard by Creative Tim
+    Bank WebApp by Riccardo Negri
   </title>
-  <!--     Font     -->
+
+  <!-- Font -->
   <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet"/>
+
   <!-- CSS Files -->
-  <link id="pagestyle" th:href="@{/assets/css/soft-ui-dashboard.css}" rel="stylesheet"/>
+  <link id="pagestyle" th:href="@{/assets/css/style.css}" rel="stylesheet"/>
 </head>
 
 <body class="g-sidenav-show  bg-gray-100">
@@ -42,24 +42,19 @@
         <div class="card mb-4">
           <div class="card-body px-0 pt-0 pb-2">
             <div class="mb-lg-0 mb-4">
-              <div class="">
                 <div class="card-body p-3 pb-2">
                   <div class="row">
-                    <div class="">
                       <div class="d-flex flex-column h-100">
                         <p class="mb-1 pt-2 text-bold text-sm" th:text="'Origin URL: ' + ${requestUri.substring(1, requestUri.length)}"></p>
                         <h5 class="font-weight-bolder" th:text="'Code ' + ${code}"></h5>
                         <p class="mb-4" th:text="${errorMessage}"></p>
                         <a class="text-body text-sm font-weight-bold mb-0 icon-move-right mt-auto" href="home">
                           Go back to the home page
-                          <i class="fas fa-arrow-right text-sm ms-1" aria-hidden="true"></i>
                         </a>
                       </div>
                     </div>
-                  </div>
                 </div>
               </div>
-            </div>
           </div>
         </div>
       </div>

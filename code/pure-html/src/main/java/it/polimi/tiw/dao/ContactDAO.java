@@ -12,7 +12,7 @@ import java.util.List;
 import java.sql.Timestamp;
 
 public class ContactDAO {
-    private Connection connection;
+    private final Connection connection;
 
     public ContactDAO(Connection connection) {
         this.connection = connection;
@@ -20,10 +20,10 @@ public class ContactDAO {
 
     public List<Contact> findContactsFromUserID(int userID) throws SQLException {
         List<Contact> UserContacts = new ArrayList<>();
-        String query = "SELECT  * FROM contact JOIN account ON contact.element = account.id JOIN user ON account.user = user.id  WHERE contact.owner = ? ORDER BY user.id";
-        try (PreparedStatement preparedStatement = connection.prepareStatement(query);) {
+        String query = "SELECT  * FROM contact JOIN account ON contact.element = account.id JOIN user ON account.user = user.id  WHERE contact.owner = ? ORDER BY user.id, account.code";
+        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setString(1, String.valueOf(userID));
-            try (ResultSet result = preparedStatement.executeQuery();) {
+            try (ResultSet result = preparedStatement.executeQuery()) {
                 String previousUser = null;
                 User user = null;
                 List<String> accountList = new ArrayList<>();
@@ -66,10 +66,10 @@ public class ContactDAO {
 
     public boolean isAccountInContacts(int userID, int accountID) throws SQLException {
         String query = "SELECT * FROM contact WHERE owner = ? AND element = ?";
-        try (PreparedStatement preparedStatement = connection.prepareStatement(query);) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setString(1, String.valueOf(userID));
             preparedStatement.setString(2, String.valueOf(accountID));
-            try (ResultSet result = preparedStatement.executeQuery();) {
+            try (ResultSet result = preparedStatement.executeQuery()) {
                 return result.isBeforeFirst();
             }
         }
@@ -77,7 +77,7 @@ public class ContactDAO {
 
     public void addContact (int owner, int element) throws SQLException {
         String query = "INSERT INTO contact (owner, element) VALUES (?, ?)";
-        try (PreparedStatement preparedStatement = connection.prepareStatement(query);) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setString(1, String.valueOf(owner));
             preparedStatement.setString(2, String.valueOf(element));
             preparedStatement.executeUpdate();

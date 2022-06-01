@@ -6,17 +6,19 @@ import it.polimi.tiw.beans.User;
 import it.polimi.tiw.dao.AccountDAO;
 
 public class UserDAO {
-    private Connection connection;
+    private final Connection connection;
 
     public UserDAO(Connection connection) {
         this.connection = connection;
     }
 
+    // TODO hash password
+
     public boolean existsUserWithUsername(String username) throws SQLException {
         String query = "SELECT  * FROM user  WHERE username = ?";
-        try (PreparedStatement preparedStatement = connection.prepareStatement(query);) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setString(1, username);
-            try (ResultSet result = preparedStatement.executeQuery();) {
+            try (ResultSet result = preparedStatement.executeQuery()) {
                 if (!result.isBeforeFirst()) // no results, there are no users with hat email or username
                     return false;
                 else {

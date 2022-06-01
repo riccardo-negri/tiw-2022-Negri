@@ -28,8 +28,7 @@ public class AddContact extends AbstractServlet {
         doPost(request,response);
     }
 
-
-    /*
+    /**
     *   Parameters:
     *   - account (ID of the account to add to the contact list of the user)
     *   - origin (Account ID for the page to go back to)

@@ -119,4 +119,20 @@ public class TransactionDAO {
             return id;
         }
     }
+
+    public Timestamp getLastActivity(int accountID) throws SQLException {
+        String query = "SELECT  * FROM transaction  WHERE origin = ? OR destination = ? ORDER BY timestamp DESC";
+        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setString(1, String.valueOf(accountID));
+            preparedStatement.setString(2, String.valueOf(accountID));
+            try (ResultSet result = preparedStatement.executeQuery()) {
+                if (!result.isBeforeFirst()) // no results, there is no last activity so no transactions
+                    return null;
+                else {
+                    result.next();
+                    return result.getTimestamp("timestamp");
+                }
+            }
+        }
+    }
 }

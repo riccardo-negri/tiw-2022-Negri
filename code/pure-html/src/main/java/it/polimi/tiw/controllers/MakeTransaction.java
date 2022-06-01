@@ -51,6 +51,7 @@ public class MakeTransaction extends AbstractServlet {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+
         // execute the transaction
         TransactionDAO transactionDAO = new TransactionDAO(connection);
         int transactionID;
@@ -62,7 +63,6 @@ public class MakeTransaction extends AbstractServlet {
 
         // Return view
         String path = getServletContext().getContextPath() + "/transaction-outcome" + "?id=" + transactionID;
-        request.setAttribute("result", "Everything went well");
         response.sendRedirect(path);
     }
 

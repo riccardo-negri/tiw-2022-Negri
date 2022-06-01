@@ -51,6 +51,7 @@ public class TransactionOutcomePage extends AbstractServlet {
                 return;
             }
 
+            // TODO check if transaction exists and if it is sent by the user that did it
             TransactionDAO transactionDAO = new TransactionDAO(connection);
             Transaction transaction;
             try {

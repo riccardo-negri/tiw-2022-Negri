@@ -1,25 +1,17 @@
 package it.polimi.tiw.controllers;
 
 import java.io.IOException;
-import java.io.Serial;
-import java.sql.Connection;
 import java.sql.SQLException;
 
 import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.WebContext;
-import org.thymeleaf.templatemode.TemplateMode;
-import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
 
 import it.polimi.tiw.dao.UserDAO;
-import it.polimi.tiw.utils.ConnectionHandler;
 import it.polimi.tiw.beans.User;
 import it.polimi.tiw.controllers.AbstractServlet;
 
@@ -27,13 +19,7 @@ import it.polimi.tiw.controllers.AbstractServlet;
 public class Login extends AbstractServlet {
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        HttpSession session = request.getSession();
-        if (session.getAttribute("user") != null) {
-            response.sendRedirect("home");
-            return;
-        }
         String registered = request.getParameter("registered");
-
         ServletContext servletContext = getServletContext();
         final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
         ctx.setVariable("registered", registered);
@@ -41,9 +27,6 @@ public class Login extends AbstractServlet {
         templateEngine.process(path, ctx, response.getWriter());
     }
 
-    /**
-     * validate the login, if it is not correct just forward on himself
-     */
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         ServletContext servletContext = getServletContext();
         final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
@@ -66,7 +49,7 @@ public class Login extends AbstractServlet {
             return;
         }
 
-        // query db to authenticate for user
+        // query db to authenticate the user
         UserDAO userDao = new UserDAO(connection);
         User user;
         try {
@@ -84,20 +67,13 @@ public class Login extends AbstractServlet {
             ctx.setVariable("errorMsg", "Incorrect username or password");
             path = "/WEB-INF/templates/login.html";
             templateEngine.process(path, ctx, response.getWriter());
-        } else {
-            request.getSession().setAttribute("user", user); //TODO set as session atteribute the ID so it is more scalable
-            String target = "/home";
-            path = getServletContext().getContextPath();
-            response.sendRedirect(path + target);
+            return;
         }
-    }
 
-    public void destroy() {
-        try {
-            ConnectionHandler.closeConnection(connection);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        request.getSession().setAttribute("user", user);
+        String target = "/home";
+        path = getServletContext().getContextPath();
+        response.sendRedirect(path + target);
     }
 
 }

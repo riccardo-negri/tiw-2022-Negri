@@ -8,21 +8,13 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
-import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.WebContext;
-import org.thymeleaf.templatemode.TemplateMode;
-import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
 
 import it.polimi.tiw.dao.UserDAO;
-import it.polimi.tiw.utils.ConnectionHandler;
-import it.polimi.tiw.beans.User;
 import it.polimi.tiw.controllers.AbstractServlet;
 
 @WebServlet("/registration")
@@ -40,7 +32,7 @@ public class Registration extends AbstractServlet {
         ServletContext servletContext = getServletContext();
         final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
 
-        // obtain and every parameter
+        // obtain every parameter
         String name = request.getParameter("name");
         String surname = request.getParameter("surname");
         String username = request.getParameter("username");

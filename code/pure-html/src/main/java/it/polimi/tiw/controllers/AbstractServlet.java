@@ -20,7 +20,6 @@ public abstract class AbstractServlet extends HttpServlet {
     public void init() throws ServletException {
         connection = it.polimi.tiw.utils.ConnectionHandler.getConnection(getServletContext());
 
-        //thymeleaf
         ServletContext servletContext = getServletContext();
         ServletContextTemplateResolver templateResolver = new ServletContextTemplateResolver(servletContext);
         templateResolver.setTemplateMode(TemplateMode.HTML);

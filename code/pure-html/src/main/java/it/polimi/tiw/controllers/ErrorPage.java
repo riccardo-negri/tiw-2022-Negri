@@ -1,8 +1,6 @@
 package it.polimi.tiw.controllers;
 
-import it.polimi.tiw.beans.Account;
 import it.polimi.tiw.beans.User;
-import it.polimi.tiw.dao.AccountDAO;
 import org.thymeleaf.context.WebContext;
 
 import javax.servlet.ServletContext;
@@ -12,10 +10,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
 
 import it.polimi.tiw.controllers.AbstractServlet;
 
@@ -32,25 +26,13 @@ public class ErrorPage extends AbstractServlet {
             return;
         }
 
-        User user;
-        user = (User) session.getAttribute("user");
-
-
-        PrintWriter writer = response.getWriter();
-
+        User user = (User) session.getAttribute("user");
         Exception exception = (Exception) request.getAttribute("javax.servlet.error.exception");
         Class exceptionClass = (Class) request.getAttribute("javax.servlet.error.exception_type");
         Integer code = (Integer) request.getAttribute("javax.servlet.error.status_code");
         String errorMessage = (String) request.getAttribute("javax.servlet.error.message");
         String requestUri = (String) request.getAttribute("javax.servlet.error.request_uri");
         String servletName = (String) request.getAttribute("javax.servlet.error.servlet_name");
-
-        /*writer.printf("exception: %s%n", exception);
-        writer.printf("exception_type: %s%n", exceptionClass);
-        writer.printf("status_code: %s%n", code);
-        writer.printf("message: %s%n", errorMessage);
-        response.getWriter().printf("request_uri: %s%n", requestUri);
-        writer.printf("servlet_name: %s%n", servletName);*/
 
         ServletContext servletContext = getServletContext();
         final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());

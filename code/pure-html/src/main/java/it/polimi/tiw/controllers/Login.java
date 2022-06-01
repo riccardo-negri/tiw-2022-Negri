@@ -55,8 +55,7 @@ public class Login extends AbstractServlet {
         try {
             user = userDao.checkUserLogin(username, password);
         } catch (SQLException e) {
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                    "Not Possible to check credentials");
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,"Not Possible to check credentials");
             return;
         }
 

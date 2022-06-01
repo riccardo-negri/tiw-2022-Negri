@@ -30,7 +30,7 @@
 </head>
 
 <body class="g-sidenav-show  bg-gray-100">
-<div th:replace="/WEB-INF/templates/fragments/sidebar.html :: sidebar(activePage='Outcome', accountID = ${origin.id}, transactionID = ${transaction.id})"></div>
+<div th:replace="/WEB-INF/templates/fragments/sidebar.html :: sidebar(activePage='Outcome', accountID = ${originID}, transactionID = ${transaction != null ? transaction.id : null})"></div>
 <main class="main-content position-relative max-height-vh-100 h-100 border-radius-lg ">
     <!-- Navbar -->
     <div th:replace="/WEB-INF/templates/fragments/navbar.html :: navbar(currentPage='Outcome', name = ${user.name}, surname = ${user.surname})"></div>
@@ -39,24 +39,26 @@
         <!-- NEW -->
         <div class="row">
             <div class="col-12">
+
+                <div th:if="${failMessage != null}" class="alert alert-warning m-auto mb-3 text-sm" role="alert">
+                    <strong>The transaction failed.</strong> Below you can find the reason
+                </div>
+                <div th:if="${transaction != null}" class="alert alert-success m-auto mb-3 text-sm" role="alert">
+                    <strong>The transaction was successfully executed.</strong> Below you can find the details
+                </div>
+
                 <div class="card mb-4">
                     <div class="card-header pb-0">
                         <h6>Last Transaction Outcome</h6>
                     </div>
                     <div th:if="${failMessage != null}" class="card-body px-4 pt-0 pb-2">
-                        <div class="alert alert-warning m-auto" role="alert">
-                            <strong>The transaction failed.</strong> Below you can find the reason
-                        </div>
-                        <div class="pt-2">
-                            <p th:text="${failMessage}">The transaction failed because the receiver address was
+                        <div class="pb-2">
+                            <p class="text-xs" th:text="${failMessage}">The transaction failed because the receiver address was
                                 wrong</p>
                         </div>
                     </div>
-                    <div th:if="${transaction != null}" class="card-body px-4 pt-0 pb-2">
-                        <div class="alert alert-success m-auto" role="alert">
-                            <strong>The transaction was successfully executed.</strong> Below you can find the details
-                        </div>
-                        <div class="py-2">
+                    <div th:if="${transaction != null}" class="card-body px-4 py-0">
+                        <div class="pb-2">
                             <div class="d-flex flex-column">
                                 <h6 class="mt-2 mb-2 text-sm">Transaction details:</h6>
                                 <span class="mb-2 text-xs">Transaction ID: <span
@@ -97,20 +99,24 @@
                                 <span class="mb-2 text-xs">Account balance before: <span
                                         class="text-dark ms-sm-2 font-weight-bold"
                                         th:text="'$ ' + ${#numbers.formatDecimal(destination.balance - transaction.amount, 0, 'COMMA', 2,'POINT')}"></span></span>
-                                <span class="mb-2 text-xs">Account balance after: <span
+                                <span class="mb-0 text-xs">Account balance after: <span
                                         class="text-dark ms-sm-2 font-weight-bold"
                                         th:text="'$ ' + ${#numbers.formatDecimal(destination.balance, 0, 'COMMA', 2,'POINT')}"></span></span>
                             </div>
                         </div>
                     </div>
-                    <div class="card-body px-4 pt-0 pb-2">
+                    <div class="px-4 mt-3 pb-3">
                         <form th:if="${addToContact == false}" role="form" method="post" th:action="@{/add-contact}">
                             <input type="hidden" name="origin" th:value="${origin.id}">
                             <input type="hidden" name="account" th:value="${destination.id}">
-                            <button type="submit" class="btn bg-gradient-primary"
+                            <button type="submit" class="btn bg-gradient-primary mb-1 text"
                                     th:text="'Add ' + ${transaction.receiver().name()} + ' ' + ${transaction.receiver().surname()} + ' account to your contacts' "></button>
-                            <p>By clicking this button you will be automatically redirected to your Account page</p>
+                            <p class="text-xs">By clicking you will be automatically redirected to your account page.</p>
                         </form>
+                        <a class="text-body text-sm font-weight-bold mb-0 icon-move-right mt-auto" th:href="'account?id=' + ${originID}">
+                            Go back to the account page
+                            <i class="fas fa-arrow-right text-sm ms-1" aria-hidden="true"></i>
+                        </a>
                     </div>
                 </div>
             </div>

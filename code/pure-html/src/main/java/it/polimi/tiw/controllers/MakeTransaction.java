@@ -15,6 +15,10 @@ import javax.servlet.http.HttpSession;
 
 import it.polimi.tiw.dao.AccountDAO;
 import it.polimi.tiw.dao.TransactionDAO;
+import it.polimi.tiw.utils.ParameterValidator;
+import it.polimi.tiw.beans.User;
+import it.polimi.tiw.beans.Account;
+import it.polimi.tiw.dao.UserDAO;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
@@ -27,41 +31,132 @@ public class MakeTransaction extends AbstractServlet {
         doPost(request,response);
     }
 
-
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
-        //TODO check that all these are safe
         HttpSession session = request.getSession();
-        String originCode = request.getParameter("origin-code");
-        String receiverUsername = request.getParameter("receiver-username");
-        String destinationCode = request.getParameter("destination-code");
-        String reason = request.getParameter("reason");
-        int amount = Integer.parseInt(request.getParameter("amount"));
+        User user = (User) session.getAttribute("user");
 
-        //TODO check that the sender has the money and that the receiver username owns the receiver account
-
-        // get the account IDs
         AccountDAO accountDAO = new AccountDAO(connection);
-        int origin;
-        int destination;
+        UserDAO userDAO = new UserDAO(connection);
+
+        // obtain every parameter
+        String beneficiaryUsername = request.getParameter("beneficiary-username").strip();
+        String destinationCode = request.getParameter("destination-code").strip().replace(" ", "");
+        String reason = request.getParameter("reason").strip();
+        String rawAmount = request.getParameter("amount").strip();
+        String originCode = request.getParameter("origin-code").strip();
+
+        // check for origin parameter, so it can be used later in the redirect
+        if (!ParameterValidator.validate(originCode)) { // check existence of origin account
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing value for origin-code");
+            return;
+        }
+        if (!(originCode.matches("\\d{12}"))) {  // check validity of origin account
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Origin account not well formatted, this request was not legit");
+            return;
+        }
+        Account originAccount;
         try {
-            origin = accountDAO.getAccountFromCode(originCode).id();
-            destination = accountDAO.getAccountFromCode(destinationCode).id();
+            originAccount = accountDAO.getAccountFromCode(originCode);
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Not possible to retrieve account information");
+            return;
+        }
+        if (originAccount == null || originAccount.user() != user.id()) { // check that the origin account is owned by the session user
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Origin account not allowed, this request was not legit");
+            return;
+        }
+
+        // check existence of every parameter
+        if (!ParameterValidator.validate(beneficiaryUsername)) {
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing value for beneficiary-username");
+            return;
+        }
+        if (!ParameterValidator.validate(destinationCode)) {
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing value for destination-code");
+            return;
+        }
+        if (!ParameterValidator.validate(reason)) {
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing value for reason");
+            return;
+        }
+        if (!ParameterValidator.validate(rawAmount)) {
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing value for amount");
+            return;
+        }
+        int amount;
+        try {
+            amount = Integer.parseInt(rawAmount);
+        } catch (NumberFormatException | NullPointerException e) {
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Amount must be a number");
+            return;
+        }
+
+        // check if the values are correctly formatted
+        if (!beneficiaryUsername.matches("[a-zA-Z]+")) {
+            String path = getServletContext().getContextPath() + "/transaction-outcome?origin=" + originAccount.id() + "&failed=" + "Beneficiary name not correct.";
+            response.sendRedirect(path);
+            return;
+        }
+        if (!(destinationCode.matches("\\d{12}") && destinationCode.length() == 12)) {
+            String path = getServletContext().getContextPath() + "/transaction-outcome?origin=" + originAccount.id() + "&failed=" + "Beneficiary account not correct.";
+            response.sendRedirect(path);
+            return;
+        }
+
+        // check that the origin account has enough money to make the transaction
+        if(originAccount.balance() < amount) {
+            String path = getServletContext().getContextPath() + "/transaction-outcome?origin=" + originAccount.id() + "&failed=" + "You don't have enough money to execute the transaction.";
+            response.sendRedirect(path);
+            return;
+        }
+
+        // check that the destination user exists
+        User destinationUser;
+        try {
+            destinationUser = userDAO.getUserFromUsername(beneficiaryUsername);
+        } catch (SQLException e) {
+            response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Not possible to retrieve user information");
+            return;
+        }
+        if (destinationUser == null) {
+            String path = getServletContext().getContextPath() + "/transaction-outcome?origin=" + originAccount.id() + "&failed=" + "Beneficiary username is not correct.";
+            response.sendRedirect(path);
+            return;
+        }
+
+        // check that the destination account is owned by the user
+        Account destinationAccount;
+        try {
+            destinationAccount = accountDAO.getAccountFromCode(destinationCode);
+        } catch (SQLException e) {
+            response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Not possible to retrieve account information");
+            return;
+        }
+        if(destinationAccount == null || destinationAccount.user() != destinationUser.id()) {
+            String path = getServletContext().getContextPath() + "/transaction-outcome?origin=" + originAccount.id() + "&failed=" + "Beneficiary account code is not correct, account does not exist or it's not owned by the beneficiary indicated.";
+            response.sendRedirect(path);
+            return;
+        }
+
+        // check that sender and receiver account is not the same account
+        if (originAccount.id() == destinationAccount.id()) {
+            String path = getServletContext().getContextPath() + "/transaction-outcome?origin=" + originAccount.id() + "&failed=" + "You can not send money to yourself.";
+            response.sendRedirect(path);
+            return;
         }
 
         // execute the transaction
         TransactionDAO transactionDAO = new TransactionDAO(connection);
         int transactionID;
         try {
-            transactionID = transactionDAO.addTransaction(amount, reason, origin, destination);
+            transactionID = transactionDAO.addTransaction(amount, reason, originAccount.id(), destinationAccount.id());
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Not possible to insert the transaction in the database, retry later");
+            return;
         }
 
-        // Return view
+        // Everything went well
         String path = getServletContext().getContextPath() + "/transaction-outcome" + "?id=" + transactionID;
         response.sendRedirect(path);
     }

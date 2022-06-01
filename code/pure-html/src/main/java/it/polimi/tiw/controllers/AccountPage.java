@@ -40,7 +40,7 @@ public class AccountPage extends AbstractServlet {
         try {
             accountID = Integer.parseInt(request.getParameter("id"));
         } catch (NumberFormatException | NullPointerException e) {
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Incorrect value for id");
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Incorrect value for accountID");
             return;
         }
 
@@ -50,11 +50,11 @@ public class AccountPage extends AbstractServlet {
         try {
             account = accountDAO.getAccountFromID(accountID);
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Not possible to retrieve account information");
+            return;
         }
-        if (account == null || account.user() != user.id()) { // redirect to homepage if the account id doesn't exist or if it doesn't belong to the user
-            String path = getServletContext().getContextPath() + "/home";
-            response.sendRedirect(path);
+        if (account == null || account.user() != user.id()) { // the account id doesn't exist or if it doesn't belong to the user
+            response.sendError(HttpServletResponse.SC_FORBIDDEN, "You don't have the rights to access this account");
             return;
         }
 

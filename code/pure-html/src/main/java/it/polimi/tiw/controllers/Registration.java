@@ -90,6 +90,28 @@ public class Registration extends AbstractServlet {
             return;
         }
 
+        // check that the values are within the allowed size (45)
+        if (name.length() > 45) {
+            ctx.setVariable("errorMsg", "Name too long!");
+            templateEngine.process(path, ctx, response.getWriter());
+            return;
+        }
+        if (surname.length() > 45) {
+            ctx.setVariable("errorMsg", "Surname too long!");
+            templateEngine.process(path, ctx, response.getWriter());
+            return;
+        }
+        if (username.length() > 45) {
+            ctx.setVariable("errorMsg", "Username too long!");
+            templateEngine.process(path, ctx, response.getWriter());
+            return;
+        }
+        if (email.length() > 45) {
+            ctx.setVariable("errorMsg", "Email too long!");
+            templateEngine.process(path, ctx, response.getWriter());
+            return;
+        }
+
         // check if username is available
         UserDAO userDao = new UserDAO(connection);
         try {

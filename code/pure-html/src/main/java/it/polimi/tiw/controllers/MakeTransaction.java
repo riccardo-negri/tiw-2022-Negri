@@ -100,6 +100,13 @@ public class MakeTransaction extends AbstractServlet {
             return;
         }
 
+        // check that the reason is within the allowed length (255)
+        if (reason.length() > 255) {
+            String path = getServletContext().getContextPath() + "/transaction-outcome?origin=" + originAccount.id() + "&failed=" + "Reason was too long.";
+            response.sendRedirect(path);
+            return;
+        }
+
         // check that the origin account has enough money to make the transaction
         if(originAccount.balance() < amount) {
             String path = getServletContext().getContextPath() + "/transaction-outcome?origin=" + originAccount.id() + "&failed=" + "You don't have enough money to execute the transaction.";

@@ -11,7 +11,6 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 public abstract class AbstractServlet extends HttpServlet {
-    protected static final long serialVersionUID = 1L;
     protected Connection connection = null;
     protected TemplateEngine templateEngine;
 

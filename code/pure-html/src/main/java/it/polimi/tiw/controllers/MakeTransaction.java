@@ -21,7 +21,8 @@ import it.polimi.tiw.controllers.AbstractServlet;
 public class MakeTransaction extends AbstractServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        doPost(request,response);
+        response.sendError(HttpServletResponse.SC_FORBIDDEN, "Operation not allowed");
+        return;
     }
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -33,11 +34,11 @@ public class MakeTransaction extends AbstractServlet {
         UserDAO userDAO = new UserDAO(connection);
 
         // obtain every parameter
-        String beneficiaryUsername = request.getParameter("beneficiary-username").strip();
-        String destinationCode = request.getParameter("destination-code").strip().replace(" ", "");
-        String reason = request.getParameter("reason").strip();
-        String rawAmount = request.getParameter("amount").strip();
-        String originCode = request.getParameter("origin-code").strip();
+        String beneficiaryUsername = request.getParameter("beneficiary-username");
+        String destinationCode = request.getParameter("destination-code");
+        String reason = request.getParameter("reason");
+        String rawAmount = request.getParameter("amount");
+        String originCode = request.getParameter("origin-code");
 
         // check for origin parameter, so it can be used later in the redirect
         // check existence of origin account
@@ -87,6 +88,11 @@ public class MakeTransaction extends AbstractServlet {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Amount must be a number");
             return;
         }
+
+        // strip the values
+        beneficiaryUsername = beneficiaryUsername.strip();
+        destinationCode = destinationCode.strip().replace(" ", "");
+        reason = reason.strip();
 
         // check if the values are correctly formatted
         if (!beneficiaryUsername.matches("[a-zA-Z]+")) {

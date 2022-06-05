@@ -42,7 +42,7 @@ public class AccountDAO {
         return UserAccounts;
     }
 
-    public Account getAccountFromID (int accountID) throws SQLException {
+    public Account getAccountFromID(int accountID) throws SQLException {
         String query = "SELECT  * FROM account  WHERE id = ?";
         try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setString(1, String.valueOf(accountID));
@@ -63,7 +63,7 @@ public class AccountDAO {
         }
     }
 
-    public Account getAccountFromCode (String code) throws SQLException {
+    public Account getAccountFromCode(String code) throws SQLException {
         String query = "SELECT  * FROM account  WHERE code = ?";
         try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setString(1, String.valueOf(code));
@@ -84,7 +84,7 @@ public class AccountDAO {
         }
     }
 
-    public void updateBalance (int accountID, int delta) throws SQLException {
+    public void updateBalance(int accountID, int delta) throws SQLException {
         String query = "UPDATE account SET balance = balance + ? WHERE id = ?";
         try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setString(1, String.valueOf(delta));
@@ -113,6 +113,7 @@ public class AccountDAO {
 
         }
     }
+
     public void createAccount(int userID)
             throws SQLException {
         String query = "INSERT INTO account (code, balance, user) VALUES (?, ?, ?)";

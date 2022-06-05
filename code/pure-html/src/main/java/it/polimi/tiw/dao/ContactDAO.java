@@ -9,7 +9,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.sql.Timestamp;
 
 public class ContactDAO {
     private final Connection connection;
@@ -75,7 +74,7 @@ public class ContactDAO {
         }
     }
 
-    public void addContact (int owner, int element) throws SQLException {
+    public void addContact(int owner, int element) throws SQLException {
         String query = "INSERT INTO contact (owner, element) VALUES (?, ?)";
         try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setString(1, String.valueOf(owner));

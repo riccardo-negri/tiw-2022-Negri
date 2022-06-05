@@ -60,7 +60,7 @@ public class AddContact extends AbstractServlet {
             response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Not possible to retrieve transaction information");
             return;
         }
-        if(account == null) {
+        if (account == null) {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Account to add does not exist");
             return;
         }

@@ -10,12 +10,14 @@ import javax.servlet.http.HttpServlet;
 import java.sql.Connection;
 import java.sql.SQLException;
 
+import it.polimi.tiw.utils.ConnectionHandler;
+
 public abstract class AbstractServlet extends HttpServlet {
     protected Connection connection = null;
     protected TemplateEngine templateEngine;
 
     public void init() throws ServletException {
-        connection = it.polimi.tiw.utils.ConnectionHandler.getConnection(getServletContext());
+        connection = ConnectionHandler.getConnection(getServletContext());
 
         ServletContext servletContext = getServletContext();
         ServletContextTemplateResolver templateResolver = new ServletContextTemplateResolver(servletContext);
@@ -27,7 +29,7 @@ public abstract class AbstractServlet extends HttpServlet {
 
     public void destroy() {
         try {
-            it.polimi.tiw.utils.ConnectionHandler.closeConnection(connection);
+            ConnectionHandler.closeConnection(connection);
         } catch (SQLException e) {
             e.printStackTrace();
         }

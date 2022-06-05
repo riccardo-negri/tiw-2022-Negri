@@ -7,6 +7,7 @@ import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
 import javax.servlet.Filter;
 import javax.servlet.FilterConfig;
 import javax.servlet.ServletContext;
+
 public abstract class AbstractFilter implements Filter {
     protected TemplateEngine templateEngine;
 

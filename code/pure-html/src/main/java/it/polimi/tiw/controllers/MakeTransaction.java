@@ -114,7 +114,7 @@ public class MakeTransaction extends AbstractServlet {
         }
 
         // check that the origin account has enough money to make the transaction
-        if(originAccount.balance() < amount) {
+        if (originAccount.balance() < amount) {
             String path = getServletContext().getContextPath() + "/transaction-outcome?origin=" + originAccount.id() + "&failed=" + "You don't have enough money to execute the transaction.";
             response.sendRedirect(path);
             return;
@@ -142,7 +142,7 @@ public class MakeTransaction extends AbstractServlet {
             response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Not possible to retrieve account information");
             return;
         }
-        if(destinationAccount == null || destinationAccount.user() != destinationUser.id()) {
+        if (destinationAccount == null || destinationAccount.user() != destinationUser.id()) {
             String path = getServletContext().getContextPath() + "/transaction-outcome?origin=" + originAccount.id() + "&failed=" + "Beneficiary account code is not correct, account does not exist or it's not owned by the beneficiary indicated.";
             response.sendRedirect(path);
             return;

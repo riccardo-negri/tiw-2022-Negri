@@ -3,23 +3,15 @@ package it.polimi.tiw.filters;
 import java.io.IOException;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.thymeleaf.context.WebContext;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import it.polimi.tiw.filters.AbstractFilter;
-
-/**
- * Servlet Filter implementation class checker
- */
 
 public class AlreadyLoggedInChecker extends AbstractFilter {
 

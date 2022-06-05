@@ -124,7 +124,7 @@ public class Registration extends AbstractServlet {
             throw new RuntimeException(e);
         }
 
-        // check is email is available
+        // check if email is available
         try {
             if (userDao.existsUserWithEmail(email)) {
                 ctx.setVariable("errorMsg", "The email is already taken!");

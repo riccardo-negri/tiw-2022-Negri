@@ -87,6 +87,7 @@ public class TransactionDAO {
             }
         }
     }
+
     public Integer addTransaction(int amount, String reason, int origin, int destination) throws SQLException {
         AccountDAO accountDAO = new AccountDAO(connection);
         String query = "INSERT INTO transaction (amount, reason, origin, destination) VALUES (?, ?, ?, ?)";
@@ -101,7 +102,7 @@ public class TransactionDAO {
             preparedStatement.executeUpdate();
 
             try (ResultSet rs = preparedStatement.getGeneratedKeys()) {
-                if(rs.first()) {
+                if (rs.first()) {
                     id = rs.getInt(1);
                 }
             }

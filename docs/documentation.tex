@@ -136,6 +136,8 @@ CONTO(\underline{ID}, codice, saldo, utente)
 TRASFERIMENTO(\underline{ID}, data, importo, causale, origine, destinazione)
 
 \subsection{Database schema}
+Nel db tutti gli on delete sono no action perché ho la necessità di mantenere le informazioni per il futuro (da argomentare meglio)
+
 Statement per creare il database:
 \begin{minted}{mysql}
 CREATE DATABASE tiw_db;

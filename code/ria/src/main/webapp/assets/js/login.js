@@ -12,7 +12,7 @@
                         switch (x.status) {
                             case 200:
                                 sessionStorage.setItem('username', message);
-                                window.location.href = "home.html";
+                                window.location.href = "app.html";
                                 break;
                             case 400: // bad request
                                 document.getElementById("error-message").textContent = message;

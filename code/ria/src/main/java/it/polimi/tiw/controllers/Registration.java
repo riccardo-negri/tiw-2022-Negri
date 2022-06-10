@@ -17,11 +17,6 @@ import it.polimi.tiw.controllers.AbstractServlet;
 @WebServlet("/registration")
 @MultipartConfig
 public class Registration extends AbstractServlet {
-
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        doPost(request, response);
-    }
-
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
         // obtain every parameter

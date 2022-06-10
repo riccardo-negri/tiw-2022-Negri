@@ -14,10 +14,12 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 
+import com.google.gson.Gson;
+
 import it.polimi.tiw.controllers.AbstractServlet;
 
-@WebServlet("/home")
-public class HomePage extends AbstractServlet {
+@WebServlet("/get-account-list")
+public class GetAccountList extends AbstractServlet {
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         HttpSession session = request.getSession();
@@ -29,17 +31,15 @@ public class HomePage extends AbstractServlet {
             accounts = accountDAO.findAccountsWithLastActivity(user.id());
         } catch (SQLException e) {
             e.printStackTrace();
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Not possible to recover accounts");
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            response.getWriter().println("Not possible to recover accounts");
             return;
         }
 
-        ServletContext servletContext = getServletContext();
-        final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
-        ctx.setVariable("accounts", accounts);
-        ctx.setVariable("name", user.name());
-        ctx.setVariable("surname", user.surname());
-        String path = "/WEB-INF/templates/home.html";
-        templateEngine.process(path, ctx, response.getWriter());
+        String json = new Gson().toJson(accounts);
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        response.getWriter().write(json);
     }
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {

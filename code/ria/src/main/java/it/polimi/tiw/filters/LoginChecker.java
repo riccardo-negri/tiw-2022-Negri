@@ -24,9 +24,10 @@ public class LoginChecker extends AbstractFilter {
         HttpServletResponse res = (HttpServletResponse) response;
         HttpSession s = req.getSession();
 
-        // check if the user is already logged in, if not redirect to the login page
+        // check if the user is already logged in, if not send an error message
         if (s.isNew() || s.getAttribute("user") == null) {
-            res.sendRedirect("login");
+            res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            res.getWriter().println("You don't have the permission to access this servlet!");
             return;
         }
 

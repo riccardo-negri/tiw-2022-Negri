@@ -17,11 +17,6 @@ import it.polimi.tiw.controllers.AbstractServlet;
 @WebServlet("/login")
 @MultipartConfig
 public class Login extends AbstractServlet {
-
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        doPost(request, response);
-    }
-
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         // obtain and escape params
         String username = request.getParameter("username");
@@ -63,7 +58,7 @@ public class Login extends AbstractServlet {
         response.setStatus(HttpServletResponse.SC_OK);
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
-        response.getWriter().println(user.username());
+        response.getWriter().println(user.name() + "-" + user.surname());
     }
 
 }

@@ -31,7 +31,7 @@
 
     <filter-mapping>
         <filter-name>LoginChecker</filter-name>
-        <url-pattern>/home</url-pattern>
+        <url-pattern>/get-account-list</url-pattern>
         <url-pattern>/account</url-pattern>
         <url-pattern>/add-contact</url-pattern>
         <url-pattern>/logout</url-pattern>

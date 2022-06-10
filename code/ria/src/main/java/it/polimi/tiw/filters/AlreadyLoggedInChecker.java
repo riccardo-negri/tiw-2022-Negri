@@ -26,7 +26,8 @@ public class AlreadyLoggedInChecker extends AbstractFilter {
 
         // check if the user is already logged in, if so redirect to the home page
         if (!(session.isNew() || session.getAttribute("user") == null)) {
-            res.sendRedirect("home");
+            res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            res.getWriter().println("You are already logged in and can not use this servlet!");
             return;
         }
 

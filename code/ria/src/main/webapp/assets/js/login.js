@@ -1,9 +1,12 @@
-(function() { // avoid variables ending up in the global scope
+(function () { // avoid variables ending up in the global scope
+    if (sessionStorage.getItem("registered") === "yes") document.getElementById("registered-message").textContent = "Registered successfully!";
+
     document.getElementById("login-button").addEventListener('click', (e) => {
         const form = e.target.closest("form");
+
         if (form.checkValidity()) {
             makeCall("POST", 'login', e.target.closest("form"),
-                function(x) {
+                function (x) {
                     if (x.readyState === XMLHttpRequest.DONE) {
                         const message = x.responseText;
                         switch (x.status) {

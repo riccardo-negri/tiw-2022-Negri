@@ -39,19 +39,21 @@
                         <div class="card card-plain mt-6">
                             <div class="card-header pb-0 text-left bg-transparent">
                                 <h3 class="font-weight-bolder text-info text-gradient">Welcome back</h3>
-                                <p class="mt-2 mb-0 text-success">Registered successfully!</p>
+                                <p id="registered-message" class="mt-2 mb-0 text-success"></p>
                                 <p class="mb-0">Enter your username and password to sign in</p>
-                                <p id="error-message" class="mt-0 mb-0 text-danger">Error message</p>
+                                <p id="error-message" class="mt-0 mb-0 text-danger"></p>
                             </div>
                             <div class="card-body">
                                 <form role="form">
                                     <label>Username</label>
                                     <div class="mb-3">
-                                        <input type="text" class="form-control" placeholder="Username" name="username" required>
+                                        <input type="text" class="form-control" placeholder="Username" name="username"
+                                               required>
                                     </div>
                                     <label>Password</label>
                                     <div class="mb-3">
-                                        <input type="password" class="form-control" placeholder="Password" name="password" required>
+                                        <input type="password" class="form-control" placeholder="Password"
+                                               name="password" required>
                                     </div>
                                     <div class="text-center">
                                         <button id="login-button" class="btn bg-gradient-info w-100 mt-4 mb-0">Sign in
@@ -62,7 +64,7 @@
                             <div class="card-footer text-center pt-0 px-lg-2 px-1">
                                 <p class="mb-4 text-sm mx-auto">
                                     Don't have an account?
-                                    <a href="registration" class="text-info text-gradient font-weight-bold">Sign up</a>
+                                    <a href="registration.html" class="text-info text-gradient font-weight-bold">Sign up</a>
                                 </p>
                             </div>
                         </div>
@@ -92,8 +94,7 @@
     </div>
 </footer>
 <!-- Javascript -->
-<script src="assets/js/login.js"></script>
 <script src="assets/js/utils.js"></script>
+<script src="assets/js/login.js"></script>
 </body>
-
 </html>

@@ -6,19 +6,17 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
-import javax.servlet.ServletContext;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.thymeleaf.context.WebContext;
+import com.google.gson.Gson;
 
 import it.polimi.tiw.beans.User;
 import it.polimi.tiw.beans.Account;
@@ -27,10 +25,11 @@ import it.polimi.tiw.beans.Contact;
 import it.polimi.tiw.dao.TransactionDAO;
 import it.polimi.tiw.dao.AccountDAO;
 import it.polimi.tiw.dao.ContactDAO;
+
 import it.polimi.tiw.controllers.AbstractServlet;
 
-@WebServlet("/account")
-public class AccountPage extends AbstractServlet {
+@WebServlet("/get-account")
+public class GetAccount extends AbstractServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         HttpSession session = request.getSession();
         User user = (User) session.getAttribute("user");
@@ -40,7 +39,8 @@ public class AccountPage extends AbstractServlet {
         try {
             accountID = Integer.parseInt(request.getParameter("id"));
         } catch (NumberFormatException | NullPointerException e) {
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Incorrect value for accountID");
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.getWriter().println("Incorrect value for accountID");
             return;
         }
 
@@ -50,11 +50,13 @@ public class AccountPage extends AbstractServlet {
         try {
             account = accountDAO.getAccountFromID(accountID);
         } catch (SQLException e) {
-            response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Not possible to retrieve account information");
+            response.setStatus(HttpServletResponse.SC_BAD_GATEWAY);
+            response.getWriter().println("Not possible to retrieve account information");
             return;
         }
         if (account == null || account.user() != user.id()) { // the account id doesn't exist or if it doesn't belong to the user
-            response.sendError(HttpServletResponse.SC_FORBIDDEN, "You don't have the rights to access this account");
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            response.getWriter().println("You don't have the rights to access this account");
             return;
         }
 
@@ -92,20 +94,11 @@ public class AccountPage extends AbstractServlet {
             }
         }
 
-        // set the context
-        ServletContext servletContext = getServletContext();
-        final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
-        ctx.setVariable("user", user);
-        ctx.setVariable("account", account);
-        ctx.setVariable("transactions", accountTransactions);
-        ctx.setVariable("contacts", contacts);
-        ctx.setVariable("lastMonthTransactions", lastMonthTransactions);
-        ctx.setVariable("lastYearTransactions", lastYearTransactions);
-        ctx.setVariable("previousTransactions", previousTransactions);
-        ctx.setVariable("localDateTime", LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")));
-
-        String path = "/WEB-INF/templates/account.html";
-        templateEngine.process(path, ctx, response.getWriter());
+        // TODO check support for surnames like ...è
+        String json = new Gson().toJson(Arrays.asList(account, contacts, lastMonthTransactions, lastYearTransactions, previousTransactions));
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        response.getWriter().write(json);
     }
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {

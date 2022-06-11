@@ -58,7 +58,7 @@ public class Login extends AbstractServlet {
         response.setStatus(HttpServletResponse.SC_OK);
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
-        response.getWriter().println(user.name() + "-" + user.surname());
+        response.getWriter().println(user.username());
     }
 
 }

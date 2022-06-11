@@ -10,8 +10,13 @@
             window.location.href = "index.html";
         } else {
             homeView.show();
+
+            document.getElementById("home-anchor").addEventListener("click", (e) => {
+                homeView.show()
+            })
         }
     }, false);
+
 
     function HomeView() {
         this.show = function () {

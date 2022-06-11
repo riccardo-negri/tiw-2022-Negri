@@ -17,28 +17,18 @@ import it.polimi.tiw.controllers.AbstractServlet;
 
 @WebServlet("/add-contact")
 public class AddContact extends AbstractServlet {
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        doPost(request, response);
-    }
-
-    /**
-     * Parameters:
-     * - account (ID of the account to add to the contact list of the user)
-     * - origin (Account ID for the page to go back to)
-     */
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         HttpSession session = request.getSession();
         User user = (it.polimi.tiw.beans.User) session.getAttribute("user");
 
         // get parameters
-        String accountIdToGoBackTo = request.getParameter("origin");
-        String accountToAdd = request.getParameter("account");
+        String accountToAdd = request.getParameter("id");
 
         // check existence fo every parameter, I don't care here if the accountIdToGoBack is valid because it will be handled on the Account page
-        if (!it.polimi.tiw.utils.ParameterValidator.validate(accountIdToGoBackTo) || !it.polimi.tiw.utils.ParameterValidator.validate(accountToAdd)) {
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Required parameters missing");
+        if (!it.polimi.tiw.utils.ParameterValidator.validate(accountToAdd)) {
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.getWriter().println("Required parameters missing");
             return;
         }
 
@@ -47,7 +37,8 @@ public class AddContact extends AbstractServlet {
         try {
             accountToAddID = Integer.parseInt(accountToAdd);
         } catch (NumberFormatException e) {
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Required parameters not valid");
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.getWriter().println("Required parameters not valid");
             return;
         }
 
@@ -57,11 +48,13 @@ public class AddContact extends AbstractServlet {
         try {
             account = accountDAO.getAccountFromID(accountToAddID);
         } catch (SQLException e) {
-            response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Not possible to retrieve transaction information");
+            response.setStatus(HttpServletResponse.SC_BAD_GATEWAY);
+            response.getWriter().println("Not possible to retrieve transaction information");
             return;
         }
         if (account == null) {
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Account to add does not exist");
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.getWriter().println("Account to add does not exist");
             return;
         }
 
@@ -71,11 +64,13 @@ public class AddContact extends AbstractServlet {
         try {
             isAlreadyInTheContacts = contactDAO.isAccountInContacts(user.id(), accountToAddID);
         } catch (SQLException e) {
-            response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Not possible to retrieve contact information");
+            response.setStatus(HttpServletResponse.SC_BAD_GATEWAY);
+            response.getWriter().println("Not possible to retrieve contact information");
             return;
         }
         if (isAlreadyInTheContacts) {
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "The account is already in the contacts");
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.getWriter().println("The account is already in the contacts");
             return;
         }
 
@@ -86,9 +81,10 @@ public class AddContact extends AbstractServlet {
             throw new RuntimeException(e);
         }
 
-        // everything went well, can go back to the account page
-        String path = getServletContext().getContextPath() + "/account?id=" + accountIdToGoBackTo;
-        response.sendRedirect(path);
+        // everything went well
+        response.setStatus(HttpServletResponse.SC_OK);
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
     }
 
 }

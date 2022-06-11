@@ -18,7 +18,7 @@ function validatePasswords(form) {
 (function () { // avoid variables ending up in the global scope
     document.getElementById("registration-button").addEventListener('click', () => {
         const form = document.getElementById("form");
-
+        e.preventDefault();
         if (form.checkValidity()) {
             if (validateEmail(form) && validatePasswords(form)) {
                 makeCall("POST", 'registration', form,

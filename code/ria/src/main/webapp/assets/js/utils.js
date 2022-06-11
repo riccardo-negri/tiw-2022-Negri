@@ -15,9 +15,7 @@ function makeCall(method, url, formElement, callBack, reset = true) {
 }
 
 const currencyFormatter = new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 2
+    style: 'currency', currency: 'USD', minimumFractionDigits: 2
 })
 
 const accountCodeFormatter = (code) => {
@@ -84,7 +82,98 @@ const validateAccountCode = (code) => {
 const validateAmount = (amount, balance) => {
     amount = parseInt(amount)
     balance = parseInt(balance)
-    if(amount > 0 && amount <= balance) return true
+    if (amount > 0 && amount <= balance) return true
     displayGenericModal("Invalid amount", "Please insert a valid amount that is more than zero and within your balance")
     return false
 }
+
+const autocomplete = (inputField, possibleValues) => {
+    let currentFocus;
+
+    // triggered when someone is writing in the field
+    ['input','focusin'].forEach( event =>
+        inputField.addEventListener(event, function (e) {
+            e.stopPropagation();
+
+            let valuesListHtml, valueHtml, value = this.value;
+
+            // close any already open lists of autocompleted values
+            closeAllLists();
+
+            currentFocus = -1;
+
+            // create a DIV element that will contain the items (values)
+            valuesListHtml = document.createElement("DIV");
+            valuesListHtml.setAttribute("id", this.id + "autocomplete-list");
+            valuesListHtml.setAttribute("class", "autocomplete-items list-group text-left  position-absolute z-index-3 shadow-card text-sm");
+
+            // append the DIV element as a child of the autocomplete container
+            this.parentNode.appendChild(valuesListHtml);
+
+            possibleValues.forEach(candidate =>  {
+                // create a DIV element for each matching element
+                if (value.length === 0 || candidate.slice(0, value.length).toUpperCase() === value.toUpperCase()) {
+                    valueHtml = document.createElement("DIV");
+                    valueHtml.setAttribute("class", "list-group-item list-group-item-action");
+                    valueHtml.innerHTML = "<strong>" + candidate.slice(0, value.length) + "</strong>";
+                    valueHtml.innerHTML += candidate.slice(value.length);
+                    valueHtml.innerHTML += "<input type='hidden' value='" + candidate + "'>";
+
+                    valueHtml.addEventListener("click", function (e) {
+                        inputField.value = this.getElementsByTagName("input")[0].value;
+                        closeAllLists();
+                    });
+
+                    valuesListHtml.appendChild(valueHtml);
+                }
+            })
+        })
+    );
+
+    // execute when someone presses a keydown on the keyboard
+    inputField.addEventListener("keydown", function (e) {
+        let elements = document.getElementById(this.id + "autocomplete-list").getElementsByTagName("div");
+        if (e.keyCode === 40) { // arrow down
+            currentFocus++;
+            addActive(elements); // make the current item more visible
+        } else if (e.keyCode === 38) { // arrow up
+            currentFocus--;
+            addActive(elements);
+        } else if (e.keyCode === 13) { // enter key
+            e.preventDefault(); // prevent the form from being submitted
+            if (currentFocus > -1) {
+                if (elements) elements[currentFocus].click(); // simulate a click on the "active" item
+            }
+        }
+    });
+
+    let addActive = (elements) => {
+        removeActive(elements);  // remove the "active" class on all items
+        if (currentFocus >= elements.length) currentFocus = 0;
+        if (currentFocus < 0) currentFocus = elements.length - 1;
+        elements[currentFocus].classList.add("active");
+    }
+
+    let removeActive = (elements) => {
+        for (let i = 0; i < elements.length; i++) {
+            elements[i].classList.remove("active");
+        }
+    }
+
+    let closeAllLists = (element) => {
+        /*close all autocomplete lists in the document,
+        except the one passed as an argument:*/
+        let elements = document.getElementsByClassName("autocomplete-items");
+        for (let i = 0; i < elements.length; i++) {
+            if (element !== elements[i] && element !== inputField) {
+                elements[i].parentNode.removeChild(elements[i]);
+            }
+        }
+    }
+
+    //execute when someone clicks in the document
+    document.addEventListener("click", function (e) {
+        closeAllLists(e.target);
+    });
+
+};

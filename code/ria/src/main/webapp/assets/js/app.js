@@ -17,8 +17,6 @@
         this.show = function () {
             const self = this
 
-            displayGenericModal("Titolo", "messaggio")
-
             makeCall("GET", "get-account-list", null, function (req) {
                 if (req.readyState === 4) {
                     if (req.status === 200) {
@@ -78,7 +76,7 @@
         this.update = function (account, contacts, lastMonthTransactions, lastYearTransactions, previousTransactions) {
             const time = "Updated at " + new Date().toLocaleTimeString("en-US")
             // TODO set user name and surname
-            const BASE = `<div class="row mt-1"><div class="col-md-7"><!-- Info about account --><div class="row p-1"><div class="col-xl-8 mb-xl-0 mb-4"><div class="card bg-transparent shadow-xl"><div class="overflow-hidden position-relative border-radius-xl"style="background-image: url('assets/img/background_account.jpg');"><span class="mask bg-gradient-dark"></span><div class="card-body position-relative z-index-1 p-3"><p class="text-white text-sm opacity-8 mb-0">Bank Account Number</p><h5 id="account-number" class="text-white mt-1 mb-6 pb-4">${accountCodeFormatter(account.code)}</h5><div class="d-flex pt-1"><div class="d-flex"><div class="me-4"><p class="text-white text-sm opacity-8 mb-0">Account Owner</p><h6 id="account-holder" class="text-white mb-0">Mario Rossi</h6></div></div><div class="ms-auto w-20 d-flex align-items-end justify-content-end"><img class="w-40 mt-1" src="assets/img/logo_white.png" alt="logo"></div></div></div></div></div></div><div class="col-md-4"><div class="col"><div class="card"><div class="card-header mx-4 p-3 text-center"><div class="icon icon-shape icon-lg bg-gradient-primary shadow text-center border-radius-lg m-auto"><img class="w-65 mt-2 fas fa-landmark opacity-10" src="assets/img/balance.png"alt="logo"></div></div><div class="card-body pt-0 p-3 text-center"><h6 class="text-center mb-0">Balance</h6><span id="last-update-balance" class="text-xs">${time}</span><hr class="horizontal dark my-3"><h5 id="balance" class="mb-0">${currencyFormatter.format(account.balance)}</h5></div></div></div></div></div><!-- Transactions --><div class="row p-3"><div class="card h-100 mb-4"><div class="card-header pb-0 px-3"><div class="row"><div class="col-md-6"><h6 class="mb-0">Your Transactions</h6></div><div class="col-md-6 d-flex justify-content-end align-items-center"><i class="far fa-calendar-alt me-2"></i><small id="last-update-transactions">${time}</small></div></div></div><div id="transactions" class="card-body pt-4 p-3"></div></div></div></div><div class="col-md-5"><!-- Transaction form --><div class="row p-1"><div class=""><div class="card h-100"><div class="card-header pb-0 p-3"><div class="row"><div class="col-6 d-flex align-items-center"><h6 class="mb-0">Make a Transaction</h6></div></div></div><div class="card-body p-3 pb-0"><div class="card-body"><form id="form" role="form"><input type="hidden" name="origin-code" value=${account.code}><div class="row"><div class="col-md-6"><label>Beneficiary name</label><div class="mb-3"><input type="text" class="form-control" placeholder="Username"name="beneficiary-username" required></div></div><div class="col-md-6"><label>Beneficiary account</label><div class="mb-3"><input type="text" class="form-control"placeholder="1111 2222 3333" name="destination-code"required></div></div></div><label>Reason</label><div class="mb-3"><input type="text" class="form-control" placeholder="Reason" name="reason"required></div><div class="row"><div class="col-md-6"><label>Amount</label><div class="mb-3"><input type="number" class="form-control" placeholder="0" min="0"name="amount" required></div></div><div class="col-md-6"><div class="text-center pt-2"><button id="execute-button" class="btn bg-gradient-info w-100 mt-4 mb-0">Execute</button></div></div></div></form></div></div></div></div></div><!-- Contacts --><div class="row p-3"><div class="card"><div class="card-header pb-0 px-3"><h6 class="mb-0">Your Contacts</h6></div><div class="card-body pt-4 p-3"><ul id="contacts" class="list-group"></ul></div></div></div></div></div>`
+            const BASE = `<div class="row mt-1"><div class="col-md-7"><!-- Info about account --><div class="row p-1"><div class="col-xl-8 mb-xl-0 mb-4"><div class="card bg-transparent shadow-xl"><div class="overflow-hidden position-relative border-radius-xl"style="background-image: url('assets/img/background_account.jpg');"><span class="mask bg-gradient-dark"></span><div class="card-body position-relative z-index-1 p-3"><p class="text-white text-sm opacity-8 mb-0">Bank Account Number</p><h5 id="account-number" class="text-white mt-1 mb-6 pb-4">${accountCodeFormatter(account.code)}</h5><div class="d-flex pt-1"><div class="d-flex"><div class="me-4"><p class="text-white text-sm opacity-8 mb-0">Account Owner</p><h6 id="account-holder" class="text-white mb-0">Mario Rossi</h6></div></div><div class="ms-auto w-20 d-flex align-items-end justify-content-end"><img class="w-40 mt-1" src="assets/img/logo_white.png" alt="logo"></div></div></div></div></div></div><div class="col-md-4"><div class="col"><div class="card"><div class="card-header mx-4 p-3 text-center"><div class="icon icon-shape icon-lg bg-gradient-primary shadow text-center border-radius-lg m-auto"><img class="w-65 mt-2 fas fa-landmark opacity-10" src="assets/img/balance.png"alt="logo"></div></div><div class="card-body pt-0 p-3 text-center"><h6 class="text-center mb-0">Balance</h6><span id="last-update-balance" class="text-xs">${time}</span><hr class="horizontal dark my-3"><h5 id="balance" class="mb-0">${currencyFormatter.format(account.balance)}</h5></div></div></div></div></div><!-- Transactions --><div class="row p-3"><div class="card h-100 mb-4"><div class="card-header pb-0 px-3"><div class="row"><div class="col-md-6"><h6 class="mb-0">Your Transactions</h6></div><div class="col-md-6 d-flex justify-content-end align-items-center"><i class="far fa-calendar-alt me-2"></i><small id="last-update-transactions">${time}</small></div></div></div><div id="transactions" class="card-body pt-4 p-3"></div></div></div></div><div class="col-md-5"><!-- Transaction form --><div class="row p-1"><div class=""><div class="card h-100"><div class="card-header pb-0 p-3"><div class="row"><div class="col-6 d-flex align-items-center"><h6 class="mb-0">Make a Transaction</h6></div></div></div><div class="card-body p-3 pb-0"><div class="card-body"><form id="form" role="form"><input type="hidden" name="origin-code" value=${account.code}><div class="row"><div class="col-md-6"><label>Beneficiary name</label><div class="mb-3"><input id="beneficiary-username" type="text" class="form-control" placeholder="Username" name="beneficiary-username" required></div></div><div class="col-md-6"><label>Beneficiary account</label><div class="mb-3"><input id="destination-code" type="text" class="form-control"placeholder="1111 2222 3333" name="destination-code"required></div></div></div><label>Reason</label><div class="mb-3"><input type="text" class="form-control" placeholder="Reason" name="reason"required></div><div class="row"><div class="col-md-6"><label>Amount</label><div class="mb-3"><input type="number" class="form-control" placeholder="0" min="0"name="amount" required></div></div><div class="col-md-6"><div class="text-center pt-2"><button id="execute-button" class="btn bg-gradient-info w-100 mt-4 mb-0">Execute</button></div></div></div></form></div></div></div></div></div><!-- Contacts --><div class="row p-3"><div class="card"><div class="card-header pb-0 px-3"><h6 class="mb-0">Your Contacts</h6></div><div class="card-body pt-4 p-3"><ul id="contacts" class="list-group"></ul></div></div></div></div></div>`
             document.getElementById("app-container").innerHTML = BASE;
 
             // display the transactions
@@ -143,6 +141,26 @@
                 }
             });
 
+            // add autocompletion
+            let usernamesInContacts = []
+            let usernamesAccountsInContacts = {}
+            contacts.forEach(contact => {
+                usernamesInContacts.push(contact.user.username)
+
+                let temp = []
+                contact.accountList.forEach(account => {
+                    temp.push(accountCodeFormatter(account))
+                })
+                usernamesAccountsInContacts[contact.user.username.trim()] = temp
+
+            })
+            console.log(usernamesInContacts)
+            console.log(usernamesAccountsInContacts)
+            autocomplete(document.getElementById("beneficiary-username"), usernamesInContacts);
+
+            document.getElementById("beneficiary-username").addEventListener("focusout", () => {
+                autocomplete(document.getElementById("destination-code"), usernamesAccountsInContacts[document.getElementById("beneficiary-username").value.trim()]);
+            })
         }
     }
 
@@ -183,33 +201,32 @@
             modal.style.zIndex = "10000"
 
 
-
             // add to contacts
             if (!isAccountInContacts) {
                 const ADD_CONTACT = `<button id="add-contact-button" type="button" class="btn mb-0 bg-gradient-primary">Add contact</button>`
                 document.getElementById("modal-footer").innerHTML = ADD_CONTACT + document.getElementById("modal-footer").innerHTML
                 document.getElementById("add-contact-button").addEventListener("click", () => {
-                    makeCall("POST", 'add-contact?id=' + accountDestination.id, null, function (x) {
-                        if (x.readyState === XMLHttpRequest.DONE) {
-                            const message = x.responseText;
-                            switch (x.status) {
-                                case 200:
-                                    accountView.show(accountOrigin.id)
-                                    displayGenericModal("Action completed successfully", transaction.receiver.name + " " + transaction.receiver.surname + "'s account added successfully")
-                                    break;
-                                case 400: // bad request
-                                    displayGenericModal("Bad request", message)
-                                    break;
-                                case 500: // server error
-                                    displayGenericModal("Server error", message)
-                                    break;
-                                case 502:
-                                    displayGenericModal("Bad gateway", message)
-                                    break;
+                        makeCall("POST", 'add-contact?id=' + accountDestination.id, null, function (x) {
+                            if (x.readyState === XMLHttpRequest.DONE) {
+                                const message = x.responseText;
+                                switch (x.status) {
+                                    case 200:
+                                        accountView.show(accountOrigin.id)
+                                        displayGenericModal("Action completed successfully", transaction.receiver.name + " " + transaction.receiver.surname + "'s account added successfully")
+                                        break;
+                                    case 400: // bad request
+                                        displayGenericModal("Bad request", message)
+                                        break;
+                                    case 500: // server error
+                                        displayGenericModal("Server error", message)
+                                        break;
+                                    case 502:
+                                        displayGenericModal("Bad gateway", message)
+                                        break;
 
+                                }
                             }
-                        }
-                    });
+                        });
                     }
                 )
             }

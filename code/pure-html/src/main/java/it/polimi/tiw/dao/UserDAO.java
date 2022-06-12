@@ -13,8 +13,6 @@ public class UserDAO {
         this.connection = connection;
     }
 
-    // TODO hash password
-
     public boolean existsUserWithUsername(String username) throws SQLException {
         String query = "SELECT  * FROM user  WHERE username = ?";
         try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {

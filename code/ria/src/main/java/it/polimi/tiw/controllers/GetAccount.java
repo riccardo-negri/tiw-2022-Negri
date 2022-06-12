@@ -55,7 +55,7 @@ public class GetAccount extends AbstractServlet {
             return;
         }
         if (account == null || account.user() != user.id()) { // the account id doesn't exist or if it doesn't belong to the user
-            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.getWriter().println("You don't have the rights to access this account");
             return;
         }
@@ -94,7 +94,6 @@ public class GetAccount extends AbstractServlet {
             }
         }
 
-        // TODO check support for surnames like ...è
         String json = new Gson().toJson(Arrays.asList(account, contacts, lastMonthTransactions, lastYearTransactions, previousTransactions));
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");

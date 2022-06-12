@@ -1,22 +1,20 @@
 // check is user saved locally is still valid
 if (localStorage.getItem("user") !== null) {
     // make call to login page to see if I'm for real already logged in
-    makeCall("GET", 'get-account-list', null,
-        function (x) {
-            if (x.readyState === XMLHttpRequest.DONE) {
-                switch (x.status) {
-                    case 401: // unauthorized, as expected if I'm not already logged in
-                        localStorage.removeItem("user")
-                        break;
-                    default:
-                        break;
-                }
+    makeCall("GET", 'get-account-list', null, function (x) {
+        if (x.readyState === XMLHttpRequest.DONE) {
+            switch (x.status) {
+                case 401: // unauthorized, as expected if I'm not already logged in
+                    localStorage.removeItem("user")
+                    break;
+                default:
+                    break;
             }
         }
-    );
+    });
 }
 
-// check if user is logged in every second
+// check every second if user is logged in
 setInterval(function () {
     if (-1 === document.location.href.indexOf("app.html") && localStorage.getItem("user") !== null) {
         console.log("redirect 1")
@@ -94,6 +92,7 @@ const setAndDisplayModal = (markup) => {
 
     return modal
 }
+
 const displayGenericModal = (title, message) => {
     const MODAL = `<div id="modal"  class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modal-default" aria-hidden="true"><div class="modal-dialog modal- modal-dialog-centered modal-" role="document"><div class="modal-content"><div class="modal-header"><h6 class="modal-title" id="modal-title-default">${title}</h6></div><div class="modal-body">${message}</div><div class="modal-footer"><button id="close-modal-button" type="button" class="btn mb-0 bg-gradient-primary">Close</button></div></div></div></div>`
     const modal = setAndDisplayModal(MODAL)
@@ -102,7 +101,6 @@ const displayGenericModal = (title, message) => {
     modal.getElementsByTagName("button")[0].addEventListener("click", () => {
         document.getElementById("modal-container").innerHTML = ""
     })
-
 }
 
 const validateAccountCode = (code) => {
@@ -125,50 +123,49 @@ const autocomplete = (inputField, possibleValues) => {
     let currentFocus;
 
     // triggered when someone is writing in the field
-    ["input", "focus", "click"].forEach(event =>
-        inputField.addEventListener(event, function (e) {
-            // set values
-            if (inputField.id === "destination-code") possibleValues = globalThis.usernamesAccountsInContacts[document.getElementById("beneficiary-username").value.trim()]
+    ["input", "focus", "click"].forEach(event => inputField.addEventListener(event, function () {
+        // set values
+        if (inputField.id === "destination-code") possibleValues = globalThis.usernamesAccountsInContacts[document.getElementById("beneficiary-username").value.trim()]
 
-            if (possibleValues === undefined || possibleValues === null) return;
+        // in case there are no possible values end
+        if (possibleValues === undefined || possibleValues === null) return;
 
-            let valuesListHtml, valueHtml, value = this.value;
+        let valuesListHtml, valueHtml, value = this.value;
 
-            // close any already open lists of autocompleted values
-            closeAllLists();
+        // close any already open lists of autocompleted values
+        closeAllLists();
 
-            currentFocus = -1;
+        currentFocus = -1;
 
-            // create a DIV element that will contain the items (values)
-            valuesListHtml = document.createElement("DIV");
-            valuesListHtml.setAttribute("id", this.id + "-autocomplete-list");
-            valuesListHtml.setAttribute("class", "autocomplete-items list-group text-left  position-absolute z-index-3 shadow-card text-sm");
+        // create a DIV element that will contain the items (values)
+        valuesListHtml = document.createElement("DIV");
+        valuesListHtml.setAttribute("id", this.id + "-autocomplete-list");
+        valuesListHtml.setAttribute("class", "autocomplete-items list-group text-left  position-absolute z-index-3 shadow-card text-sm");
 
-            // append the DIV element as a child of the autocomplete container
-            this.parentNode.appendChild(valuesListHtml);
+        // append the DIV element as a child of the autocomplete container
+        this.parentNode.appendChild(valuesListHtml);
 
-            possibleValues.forEach(candidate => {
-                // create a DIV element for each matching element
-                if (value.trim() !== candidate.trim() && (value.length === 0 || candidate.slice(0, value.length).toUpperCase() === value.toUpperCase())) {
-                    valueHtml = document.createElement("DIV");
-                    valueHtml.setAttribute("class", "list-group-item list-group-item-action");
-                    valueHtml.innerHTML = "<strong>" + candidate.slice(0, value.length) + "</strong>";
-                    valueHtml.innerHTML += candidate.slice(value.length);
-                    valueHtml.innerHTML += "<input type='hidden' value='" + candidate + "'>";
+        possibleValues.forEach(candidate => {
+            // create a DIV element for each matching element
+            if (value.trim() !== candidate.trim() && (value.length === 0 || candidate.slice(0, value.length).toUpperCase() === value.toUpperCase())) {
+                valueHtml = document.createElement("DIV");
+                valueHtml.setAttribute("class", "list-group-item list-group-item-action");
+                valueHtml.innerHTML = "<strong>" + candidate.slice(0, value.length) + "</strong>";
+                valueHtml.innerHTML += candidate.slice(value.length);
+                valueHtml.innerHTML += "<input type='hidden' value='" + candidate + "'>";
 
-                    valueHtml.addEventListener("click", function () {
-                        inputField.value = this.getElementsByTagName("input")[0].value;
-                        autocomplete(document.getElementById("destination-code"), null);
-                        closeAllLists();
-                    });
+                valueHtml.addEventListener("click", function () {
+                    inputField.value = this.getElementsByTagName("input")[0].value;
+                    autocomplete(document.getElementById("destination-code"), null);
+                    closeAllLists();
+                });
 
-                    valuesListHtml.appendChild(valueHtml);
-                }
-            })
+                valuesListHtml.appendChild(valueHtml);
+            }
         })
-    );
+    }));
 
-    // execute when someone presses a keydown on the keyboard
+    // execute when someone presses a key on the keyboard
     inputField.addEventListener("keydown", function (e) {
         if (document.getElementById(this.id + "-autocomplete-list").getElementsByTagName("div") === null) return;
         let elements = document.getElementById(this.id + "-autocomplete-list").getElementsByTagName("div");
@@ -200,7 +197,7 @@ const autocomplete = (inputField, possibleValues) => {
     }
 
     let closeAllLists = (element) => {
-        // prevent it from closing list when click on input field
+        // prevent it from closing the list when click on input field
         if (element !== undefined && element.id === "beneficiary-username" && null !== document.getElementById("beneficiary-username-autocomplete-list")) return
         if (element !== undefined && element.id === "destination-code" && null !== document.getElementById("destination-code-autocomplete-list")) return
 
@@ -217,5 +214,4 @@ const autocomplete = (inputField, possibleValues) => {
     document.addEventListener("click", function (e) {
         closeAllLists(e.target);
     });
-
 };

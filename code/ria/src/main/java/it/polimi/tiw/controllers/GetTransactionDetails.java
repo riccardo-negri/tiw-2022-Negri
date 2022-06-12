@@ -1,9 +1,7 @@
 package it.polimi.tiw.controllers;
 
 import com.google.gson.Gson;
-import org.thymeleaf.context.WebContext;
 
-import javax.servlet.ServletContext;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -20,6 +18,7 @@ import it.polimi.tiw.beans.Transaction;
 import it.polimi.tiw.dao.AccountDAO;
 import it.polimi.tiw.beans.Account;
 import it.polimi.tiw.utils.ParameterValidator;
+
 import it.polimi.tiw.controllers.AbstractServlet;
 
 @WebServlet("/get-transaction-details")

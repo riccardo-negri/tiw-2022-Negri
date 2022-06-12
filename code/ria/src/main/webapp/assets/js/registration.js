@@ -10,28 +10,26 @@
         e.preventDefault();
         if (form.checkValidity()) {
             if (validateEmail(form) && validatePasswords(form)) {
-                makeCall("POST", 'registration', form,
-                    function (x) {
-                        if (x.readyState === XMLHttpRequest.DONE) {
-                            const message = x.responseText;
-                            switch (x.status) {
-                                case 200:
-                                    window.location.href = "index.html";
-                                    sessionStorage.setItem("registered", "yes")
-                                    break;
-                                case 400: // bad request
-                                    document.getElementById("error-message").textContent = message;
-                                    break;
-                                case 401: // unauthorized
-                                    document.getElementById("error-message").textContent = message;
-                                    break;
-                                case 500: // server error
-                                    document.getElementById("error-message").textContent = message;
-                                    break;
-                            }
+                makeCall("POST", 'registration', form, function (x) {
+                    if (x.readyState === XMLHttpRequest.DONE) {
+                        const message = x.responseText;
+                        switch (x.status) {
+                            case 200:
+                                window.location.href = "index.html";
+                                sessionStorage.setItem("registered", "yes")
+                                break;
+                            case 400: // bad request
+                                document.getElementById("error-message").textContent = message;
+                                break;
+                            case 401: // unauthorized
+                                document.getElementById("error-message").textContent = message;
+                                break;
+                            case 500: // server error
+                                document.getElementById("error-message").textContent = message;
+                                break;
                         }
                     }
-                );
+                });
             }
         } else {
             form.reportValidity();

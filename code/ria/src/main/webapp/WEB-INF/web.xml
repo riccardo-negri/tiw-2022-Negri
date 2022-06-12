@@ -29,15 +29,19 @@
         <filter-class>it.polimi.tiw.filters.AlreadyLoggedInChecker</filter-class>
     </filter>
 
+    <error-page>
+        <error-code>404</error-code>
+        <location>/index.html</location>
+    </error-page>
+
     <filter-mapping>
         <filter-name>LoginChecker</filter-name>
-        <url-pattern>/get-account-list</url-pattern>
-        <url-pattern>/account</url-pattern>
         <url-pattern>/add-contact</url-pattern>
+        <url-pattern>/get-account</url-pattern>
+        <url-pattern>/get-account-list</url-pattern>
+        <url-pattern>/get-transaction-details</url-pattern>
         <url-pattern>/logout</url-pattern>
         <url-pattern>/make-transaction</url-pattern>
-        <url-pattern>/profile</url-pattern>
-        <url-pattern>/transaction-outcome</url-pattern>
     </filter-mapping>
     <filter-mapping>
         <filter-name>AlreadyLoggedInChecker</filter-name>

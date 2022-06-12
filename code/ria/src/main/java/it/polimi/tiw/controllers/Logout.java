@@ -12,8 +12,7 @@ import it.polimi.tiw.controllers.AbstractServlet;
 @WebServlet("/logout")
 public class Logout extends AbstractServlet {
 
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws IOException {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         HttpSession session = request.getSession(false);
 
         // invalidate session if present
@@ -25,8 +24,7 @@ public class Logout extends AbstractServlet {
         response.sendRedirect(path);
     }
 
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws IOException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         doGet(request, response);
     }
 

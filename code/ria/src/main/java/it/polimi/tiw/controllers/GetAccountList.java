@@ -3,9 +3,7 @@ package it.polimi.tiw.controllers;
 import it.polimi.tiw.beans.Account;
 import it.polimi.tiw.beans.User;
 import it.polimi.tiw.dao.AccountDAO;
-import org.thymeleaf.context.WebContext;
 
-import javax.servlet.ServletContext;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -31,7 +29,7 @@ public class GetAccountList extends AbstractServlet {
             accounts = accountDAO.findAccountsWithLastActivity(user.id());
         } catch (SQLException e) {
             e.printStackTrace();
-            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            response.setStatus(HttpServletResponse.SC_BAD_GATEWAY);
             response.getWriter().println("Not possible to recover accounts");
             return;
         }

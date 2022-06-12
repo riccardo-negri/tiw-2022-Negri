@@ -16,20 +16,19 @@ import it.polimi.tiw.utils.ParameterValidator;
 import it.polimi.tiw.beans.User;
 import it.polimi.tiw.beans.Account;
 import it.polimi.tiw.dao.UserDAO;
+
 import it.polimi.tiw.controllers.AbstractServlet;
 
 @WebServlet("/make-transaction")
 @MultipartConfig
 public class MakeTransaction extends AbstractServlet {
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         response.setStatus(HttpServletResponse.SC_FORBIDDEN);
         response.getWriter().println("Operation not allowed");
         return;
     }
 
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession();
         User user = (User) session.getAttribute("user");
 

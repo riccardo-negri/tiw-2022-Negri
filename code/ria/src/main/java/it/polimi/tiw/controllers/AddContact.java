@@ -17,8 +17,7 @@ import it.polimi.tiw.controllers.AbstractServlet;
 
 @WebServlet("/add-contact")
 public class AddContact extends AbstractServlet {
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         HttpSession session = request.getSession();
         User user = (it.polimi.tiw.beans.User) session.getAttribute("user");
 

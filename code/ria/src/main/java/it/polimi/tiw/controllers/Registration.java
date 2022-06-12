@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import it.polimi.tiw.dao.UserDAO;
 import it.polimi.tiw.utils.ParameterValidator;
+
 import it.polimi.tiw.controllers.AbstractServlet;
 
 @WebServlet("/registration")

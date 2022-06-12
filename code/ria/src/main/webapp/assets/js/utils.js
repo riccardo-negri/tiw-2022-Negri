@@ -25,11 +25,11 @@ const accountCodeFormatter = (code) => {
 const markupFromTransactions = (transactions) => {
     let markup = ""
     transactions.forEach(transaction => {
-        if (transaction.receiver.username.normalize().trim() === sessionStorage.getItem("username").normalize().trim()) {
-            let POSITIVE_TRANSACTION = `<li class="list-group-item border-0 d-flex justify-content-between ps-0 mb-2 border-radius-lg"><div class="d-flex align-items-center"><button class="btn disabled btn-icon-only btn-rounded btn-outline-success mb-0 me-3 btn-sm d-flex align-items-center justify-content-center"><svg xmlns="http://www.w3.org/2000/svg" class="" fill="none"viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round"d="M7 11l5-5m0 0l5 5m-5-5v12"/></svg></button><div class="d-flex flex-column"><h6 class="mb-1 text-dark text-sm">${transaction.sender.name + " " + transaction.sender.surname}</h6><span class="text-xs">Sent from ${accountCodeFormatter(transaction.origin)} on ${transaction.timestamp}</span><span class="text-xs">Reason: ${transaction.reason}</span></div></div><div class="d-flex align-items-center text-success text-gradient text-sm font-weight-bold">+ ${currencyFormatter.format(transaction.amount)}</div></li>`
+        if (transaction.receiver.username.normalize().trim() === JSON.parse(sessionStorage.getItem("user")).username.normalize().trim()) {
+            let POSITIVE_TRANSACTION = `<li class="list-group-item border-0 d-flex justify-content-between ps-0 mb-2 border-radius-lg"><div class="d-flex align-items-center"><button class="btn disabled btn-icon-only btn-rounded btn-outline-success mb-0 me-3 btn-sm d-flex align-items-center justify-content-center"><svg xmlns="http://www.w3.org/2000/svg" class="" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M7 11l5-5m0 0l5 5m-5-5v12"/></svg></button><div class="d-flex flex-column"><h6 class="mb-1 text-dark text-sm">${transaction.sender.name + " " + transaction.sender.surname}</h6><span class="text-xs">Sent from ${accountCodeFormatter(transaction.origin)} on ${transaction.timestamp}</span><span class="text-xs">Reason: ${transaction.reason}</span></div></div><div class="d-flex align-items-center text-success text-gradient text-sm font-weight-bold">+ ${currencyFormatter.format(transaction.amount)}</div></li>`
             markup += POSITIVE_TRANSACTION
         } else {
-            let NEGATIVE_TRANSACTION = `<li class="list-group-item border-0 d-flex justify-content-between ps-0 mb-2 border-radius-lg"><div class="d-flex align-items-center"><button class="btn disabled btn-icon-only btn-rounded btn-outline-danger mb-0 me-3 btn-sm d-flex align-items-center justify-content-center"><svg xmlns="http://www.w3.org/2000/svg" class="" fill="none"viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round"d="M17 13l-5 5m0 0l-5-5m5 5V6"/></svg></button><div class="d-flex flex-column"><h6 class="mb-1 text-dark text-sm">${transaction.receiver.name + " " + transaction.receiver.surname}</h6><span class="text-xs">Sent to ${accountCodeFormatter(transaction.destination)} on ${transaction.timestamp}</span><span class="text-xs">Reason: ${transaction.reason}</span></div></div><div class="d-flex align-items-center text-danger text-gradient text-sm font-weight-bold">- ${currencyFormatter.format(transaction.amount)}</div></li>`
+            let NEGATIVE_TRANSACTION = `<li class="list-group-item border-0 d-flex justify-content-between ps-0 mb-2 border-radius-lg"><div class="d-flex align-items-center"><button class="btn disabled btn-icon-only btn-rounded btn-outline-danger mb-0 me-3 btn-sm d-flex align-items-center justify-content-center"><svg xmlns="http://www.w3.org/2000/svg" class="" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 13l-5 5m0 0l-5-5m5 5V6"/></svg></button><div class="d-flex flex-column"><h6 class="mb-1 text-dark text-sm">${transaction.receiver.name + " " + transaction.receiver.surname}</h6><span class="text-xs">Sent to ${accountCodeFormatter(transaction.destination)} on ${transaction.timestamp}</span><span class="text-xs">Reason: ${transaction.reason}</span></div></div><div class="d-flex align-items-center text-danger text-gradient text-sm font-weight-bold">- ${currencyFormatter.format(transaction.amount)}</div></li>`
             markup += NEGATIVE_TRANSACTION
         }
     })
@@ -52,10 +52,9 @@ const markupFromContact = (contacts) => {
     return markup
 }
 
-const displayGenericModal = (title, message) => {
-    const container = document.getElementById("modal-container")
-    const MODAL = `<div id="modal"  class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modal-default" aria-hidden="true"><div class="modal-dialog modal- modal-dialog-centered modal-" role="document"><div class="modal-content"><div class="modal-header"><h6 class="modal-title" id="modal-title-default">${title}</h6></div><div class="modal-body">${message}</div><div class="modal-footer"><button id="close-modal-button" type="button" class="btn mb-0 bg-gradient-primary">Close</button></div></div></div></div>`
-    container.innerHTML = MODAL
+const setAndDisplayModal = (markup) => {
+    // set the modal
+    document.getElementById("modal-container").innerHTML = markup
 
     // display the modal
     const modal = document.getElementById("modal");
@@ -64,9 +63,15 @@ const displayGenericModal = (title, message) => {
     modal.style.background = "rgba(0,0,0,0.4)"
     modal.style.zIndex = "10000"
 
+    return modal
+}
+const displayGenericModal = (title, message) => {
+    const MODAL = `<div id="modal"  class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modal-default" aria-hidden="true"><div class="modal-dialog modal- modal-dialog-centered modal-" role="document"><div class="modal-content"><div class="modal-header"><h6 class="modal-title" id="modal-title-default">${title}</h6></div><div class="modal-body">${message}</div><div class="modal-footer"><button id="close-modal-button" type="button" class="btn mb-0 bg-gradient-primary">Close</button></div></div></div></div>`
+    const modal = setAndDisplayModal(MODAL)
+
     // close button
     modal.getElementsByTagName("button")[0].addEventListener("click", () => {
-        container.innerHTML = ""
+        document.getElementById("modal-container").innerHTML = ""
     })
 
 }
@@ -91,9 +96,12 @@ const autocomplete = (inputField, possibleValues) => {
     let currentFocus;
 
     // triggered when someone is writing in the field
-    ['input','focusin'].forEach( event =>
+    ["input", "focus", "click"].forEach(event =>
         inputField.addEventListener(event, function (e) {
-            e.stopPropagation();
+            // set values
+            if (inputField.id === "destination-code") possibleValues = globalThis.usernamesAccountsInContacts[document.getElementById("beneficiary-username").value.trim()]
+
+            if(possibleValues === undefined || possibleValues === null) return;
 
             let valuesListHtml, valueHtml, value = this.value;
 
@@ -104,23 +112,24 @@ const autocomplete = (inputField, possibleValues) => {
 
             // create a DIV element that will contain the items (values)
             valuesListHtml = document.createElement("DIV");
-            valuesListHtml.setAttribute("id", this.id + "autocomplete-list");
+            valuesListHtml.setAttribute("id", this.id + "-autocomplete-list");
             valuesListHtml.setAttribute("class", "autocomplete-items list-group text-left  position-absolute z-index-3 shadow-card text-sm");
 
             // append the DIV element as a child of the autocomplete container
             this.parentNode.appendChild(valuesListHtml);
 
-            possibleValues.forEach(candidate =>  {
+            possibleValues.forEach(candidate => {
                 // create a DIV element for each matching element
-                if (value.length === 0 || candidate.slice(0, value.length).toUpperCase() === value.toUpperCase()) {
+                if (value.trim() !== candidate.trim() && (value.length === 0 || candidate.slice(0, value.length).toUpperCase() === value.toUpperCase())) {
                     valueHtml = document.createElement("DIV");
                     valueHtml.setAttribute("class", "list-group-item list-group-item-action");
                     valueHtml.innerHTML = "<strong>" + candidate.slice(0, value.length) + "</strong>";
                     valueHtml.innerHTML += candidate.slice(value.length);
                     valueHtml.innerHTML += "<input type='hidden' value='" + candidate + "'>";
 
-                    valueHtml.addEventListener("click", function (e) {
+                    valueHtml.addEventListener("click", function () {
                         inputField.value = this.getElementsByTagName("input")[0].value;
+                        autocomplete(document.getElementById("destination-code"), null);
                         closeAllLists();
                     });
 
@@ -132,7 +141,8 @@ const autocomplete = (inputField, possibleValues) => {
 
     // execute when someone presses a keydown on the keyboard
     inputField.addEventListener("keydown", function (e) {
-        let elements = document.getElementById(this.id + "autocomplete-list").getElementsByTagName("div");
+        if(document.getElementById(this.id + "-autocomplete-list").getElementsByTagName("div") === null) return;
+        let elements = document.getElementById(this.id + "-autocomplete-list").getElementsByTagName("div");
         if (e.keyCode === 40) { // arrow down
             currentFocus++;
             addActive(elements); // make the current item more visible
@@ -161,8 +171,11 @@ const autocomplete = (inputField, possibleValues) => {
     }
 
     let closeAllLists = (element) => {
-        /*close all autocomplete lists in the document,
-        except the one passed as an argument:*/
+        // prevent it from closing list when click on input field
+        if (element !== undefined && element.id === "beneficiary-username" && null !== document.getElementById("beneficiary-username-autocomplete-list")) return
+        if (element !== undefined && element.id === "destination-code" && null !== document.getElementById("destination-code-autocomplete-list")) return
+
+        // close all autocomplete lists in the document, except the one passed as an argument
         let elements = document.getElementsByClassName("autocomplete-items");
         for (let i = 0; i < elements.length; i++) {
             if (element !== elements[i] && element !== inputField) {

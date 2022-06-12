@@ -48,9 +48,9 @@
     </div>
     <hr class="horizontal dark mt-0">
     <div class="collapse navbar-collapse  w-auto " id="sidenav-collapse-main">
-        <ul class="navbar-nav">
+        <ul class="navbar-nav active">
             <li class="nav-item">
-                <a id="home-anchor" class="nav-link cursor-pointer">
+                <a id="home-link" class="nav-link cursor-pointer">
                     <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
                         <svg width="12px" height="12px" viewBox="0 0 45 40" version="1.1"
                              xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
@@ -73,7 +73,7 @@
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link cursor-pointer">
+                <a id="account-link" class="nav-link active cursor-pointer hidden">
                     <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
                         <svg width="12px" height="12px" viewBox="0 0 43 36" version="1.1"
                              xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
@@ -99,7 +99,7 @@
                 <h6 class="ps-4 ms-2 text-uppercase text-xs font-weight-bolder opacity-6">Account</h6>
             </li>
             <li class="nav-item">
-                <a class="nav-link cursor-pointer">
+                <a id="profile-link" class="nav-link cursor-pointer">
                     <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
                         <svg width="12px" height="12px" viewBox="0 0 46 42" version="1.1"
                              xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
@@ -124,7 +124,7 @@
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link cursor-pointer">
+                <a id="logout-link" class="nav-link cursor-pointer">
                     <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
                         <svg width="12px" height="20px" viewBox="0 0 40 40" version="1.1"
                              xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
@@ -170,7 +170,7 @@
             <nav>
                 <ol class="breadcrumb bg-transparent mb-0 pb-0 pt-1 px-0 me-sm-6 me-5">
                     <li class="breadcrumb-item text-sm"><a class="opacity-5 text-dark">Pages</a></li>
-                    <li class="breadcrumb-item text-sm text-dark active">PageX</li>
+                    <li id="breadcrumb-page" class="breadcrumb-item text-sm text-dark active">Page</li>
                 </ol>
             </nav>
             <div class="collapse navbar-collapse mt-sm-0 mt-2 me-md-0 me-sm-4" id="navbar">
@@ -178,7 +178,7 @@
                     <li class="nav-item d-flex align-items-center">
                         <div class="nav-link text-body font-weight-bold px-0 text-lg-end">
                             <span class="text-secondary text-sm font-weight-bold">Howdy,</span>
-                            <a class="text-sm d-sm-inline d-none">Name Surname</a>
+                            <a id="name-surname" class="cursor-pointer text-sm d-sm-inline d-none">Name Surname</a>
                         </div>
                     </li>
                 </ul>

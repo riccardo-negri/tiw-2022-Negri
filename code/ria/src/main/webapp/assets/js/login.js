@@ -11,7 +11,8 @@
                         const message = x.responseText;
                         switch (x.status) {
                             case 200:
-                                sessionStorage.setItem('username', message);
+                                let user = message
+                                sessionStorage.setItem('user', user);
                                 window.location.href = "app.html";
                                 break;
                             case 400: // bad request

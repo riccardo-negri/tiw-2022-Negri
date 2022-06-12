@@ -8,6 +8,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.google.gson.Gson;
 import it.polimi.tiw.utils.ParameterValidator;
 
 import it.polimi.tiw.dao.UserDAO;
@@ -47,7 +48,6 @@ public class Login extends AbstractServlet {
 
         // If the user exists, add info to the session and go to home page, otherwise
         // show login page with error message
-        String path;
         if (user == null) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.getWriter().println("Incorrect username or password");
@@ -55,10 +55,11 @@ public class Login extends AbstractServlet {
         }
 
         request.getSession().setAttribute("user", user);
-        response.setStatus(HttpServletResponse.SC_OK);
+
+        String json = new Gson().toJson(user);
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
-        response.getWriter().println(user.username());
+        response.getWriter().write(json);
     }
 
 }

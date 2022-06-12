@@ -1,3 +1,32 @@
+// check is user saved locally is still valid
+if (localStorage.getItem("user") !== null) {
+    // make call to login page to see if I'm for real already logged in
+    makeCall("GET", 'get-account-list', null,
+        function (x) {
+            if (x.readyState === XMLHttpRequest.DONE) {
+                switch (x.status) {
+                    case 401: // unauthorized, as expected if I'm not already logged in
+                        localStorage.removeItem("user")
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+    );
+}
+
+// check if user is logged in every second
+setInterval(function () {
+    if (-1 === document.location.href.indexOf("app.html") && localStorage.getItem("user") !== null) {
+        console.log("redirect 1")
+        document.location.href = "app.html"
+    } else if (!(-1 === document.location.href.indexOf("app.html")) && localStorage.getItem("user") === null) {
+        console.log("redirect 2")
+        document.location.href = "index.html"
+    }
+}, 1000);
+
 function makeCall(method, url, formElement, callBack, reset = true) {
     const req = new XMLHttpRequest(); // visible by closure
     req.onreadystatechange = function () {
@@ -25,7 +54,7 @@ const accountCodeFormatter = (code) => {
 const markupFromTransactions = (transactions) => {
     let markup = ""
     transactions.forEach(transaction => {
-        if (transaction.receiver.username.normalize().trim() === JSON.parse(sessionStorage.getItem("user")).username.normalize().trim()) {
+        if (transaction.receiver.username.normalize().trim() === JSON.parse(localStorage.getItem("user")).username.normalize().trim()) {
             let POSITIVE_TRANSACTION = `<li class="list-group-item border-0 d-flex justify-content-between ps-0 mb-2 border-radius-lg"><div class="d-flex align-items-center"><button class="btn disabled btn-icon-only btn-rounded btn-outline-success mb-0 me-3 btn-sm d-flex align-items-center justify-content-center"><svg xmlns="http://www.w3.org/2000/svg" class="" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M7 11l5-5m0 0l5 5m-5-5v12"/></svg></button><div class="d-flex flex-column"><h6 class="mb-1 text-dark text-sm">${transaction.sender.name + " " + transaction.sender.surname}</h6><span class="text-xs">Sent from ${accountCodeFormatter(transaction.origin)} on ${transaction.timestamp}</span><span class="text-xs">Reason: ${transaction.reason}</span></div></div><div class="d-flex align-items-center text-success text-gradient text-sm font-weight-bold">+ ${currencyFormatter.format(transaction.amount)}</div></li>`
             markup += POSITIVE_TRANSACTION
         } else {
@@ -101,7 +130,7 @@ const autocomplete = (inputField, possibleValues) => {
             // set values
             if (inputField.id === "destination-code") possibleValues = globalThis.usernamesAccountsInContacts[document.getElementById("beneficiary-username").value.trim()]
 
-            if(possibleValues === undefined || possibleValues === null) return;
+            if (possibleValues === undefined || possibleValues === null) return;
 
             let valuesListHtml, valueHtml, value = this.value;
 
@@ -141,7 +170,7 @@ const autocomplete = (inputField, possibleValues) => {
 
     // execute when someone presses a keydown on the keyboard
     inputField.addEventListener("keydown", function (e) {
-        if(document.getElementById(this.id + "-autocomplete-list").getElementsByTagName("div") === null) return;
+        if (document.getElementById(this.id + "-autocomplete-list").getElementsByTagName("div") === null) return;
         let elements = document.getElementById(this.id + "-autocomplete-list").getElementsByTagName("div");
         if (e.keyCode === 40) { // arrow down
             currentFocus++;

@@ -1,4 +1,10 @@
-(function () { // avoid variables ending up in the global scope
+{ // avoid variables ending up in the global scope
+    window.addEventListener("load", () => {
+        if (localStorage.getItem("user") !== null) {
+            window.location.href = "app.html";
+        }
+    })
+
     if (sessionStorage.getItem("registered") === "yes") document.getElementById("registered-message").textContent = "Registered successfully!";
 
     document.getElementById("login-button").addEventListener('click', (e) => {
@@ -12,7 +18,7 @@
                         switch (x.status) {
                             case 200:
                                 let user = message
-                                sessionStorage.setItem('user', user);
+                                localStorage.setItem('user', user);
                                 window.location.href = "app.html";
                                 break;
                             case 400: // bad request
@@ -33,4 +39,4 @@
         }
     });
 
-})();
+}

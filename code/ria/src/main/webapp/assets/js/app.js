@@ -8,7 +8,7 @@
 
     // core controller
     window.addEventListener("load", () => {
-        if (sessionStorage.getItem("user") == null) {
+        if (localStorage.getItem("user") == null) {
             window.location.href = "index.html";
         } else {
             homeView.show();
@@ -28,7 +28,7 @@
             // listener for logout
             document.getElementById("logout-link").addEventListener("click", (e) => {
                 // clear locally
-                sessionStorage.clear()
+                localStorage.removeItem("user")
 
                 // logout remote
                 makeCall("GET", "logout", null, function (req) {
@@ -65,7 +65,7 @@
 
         this.editor = function (accounts) {
             // set name and surname in the upper right corner
-            const user = JSON.parse(sessionStorage.getItem("user"))
+            const user = JSON.parse(localStorage.getItem("user"))
             document.getElementById("name-surname").textContent = user.name + " " + user.surname
 
             // set breadcrumb name
@@ -278,7 +278,7 @@
 
     function ProfileView() {
         this.show = function () {
-            const user = JSON.parse(sessionStorage.getItem("user"))
+            const user = JSON.parse(localStorage.getItem("user"))
             this.editor(user)
         }
 

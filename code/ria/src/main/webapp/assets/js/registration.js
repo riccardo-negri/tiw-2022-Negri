@@ -1,22 +1,11 @@
-function validateEmail(form) {
-    let regex = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/;
-    if (regex.test(form.elements["email"].value)) {
-        return true
-    }
-    alert("You have entered an invalid email address!")
-    return false
-}
+{ // avoid variables ending up in the global scope
+    window.addEventListener("load", () => {
+        if (localStorage.getItem("user") !== null) {
+            window.location.href = "app.html";
+        }
+    })
 
-function validatePasswords(form) {
-    if (form.elements["password"].value === form.elements["password-control"].value) {
-        return true
-    }
-    alert("You have entered two different passwords!")
-    return false
-}
-
-(function () { // avoid variables ending up in the global scope
-    document.getElementById("registration-button").addEventListener('click', () => {
+    document.getElementById("registration-button").addEventListener('click', (e) => {
         const form = document.getElementById("form");
         e.preventDefault();
         if (form.checkValidity()) {
@@ -48,4 +37,21 @@ function validatePasswords(form) {
             form.reportValidity();
         }
     });
-})();
+
+    function validateEmail(form) {
+        let regex = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/;
+        if (regex.test(form.elements["email"].value)) {
+            return true
+        }
+        alert("You have entered an invalid email address!")
+        return false
+    }
+
+    function validatePasswords(form) {
+        if (form.elements["password"].value === form.elements["password-control"].value) {
+            return true
+        }
+        alert("You have entered two different passwords!")
+        return false
+    }
+}

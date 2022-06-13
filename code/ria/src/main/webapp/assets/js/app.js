@@ -5,7 +5,7 @@
     const accountView = new AccountView();
     const transactionDetailsView = new TransactionDetailsView();
     const profileView = new ProfileView();
-
+    let refreshIntervalId;
     // main controller
     window.addEventListener("load", () => {
         if (localStorage.getItem("user") == null) {
@@ -13,30 +13,33 @@
         } else {
             homeView.show();
 
-            // listener for home link
+            // home button in the sidebar
             document.getElementById("home-link").addEventListener("click", () => {
                 homeView.show()
             });
 
-            // listener for account info
+            // profile button in the sidebar and link in the top right corner
             [document.getElementById("name-surname"), document.getElementById("profile-link")].forEach(element => {
                 element.addEventListener("click", () => {
                     profileView.show()
                 })
             });
 
-            // listener for logout
+            // logout button on the sidebar
             document.getElementById("logout-link").addEventListener("click", () => {
                 // clear locally
                 localStorage.removeItem("user")
 
                 // invalidate session cookie
-                makeCall("GET", "logout", null, function (req) {
-                    if (req.readyState === 4) {
-                        if (req.status === 200) {
-                            window.location.href = "index.html";
-                        } else {
-                            displayGenericModal("Something went wrong", "Some error occurred while trying to logout")
+                makeCall("GET", "logout", null, function (x) {
+                    if (x.readyState === XMLHttpRequest.DONE) {
+                        switch (x.status) {
+                            case 200:
+                                window.location.href = "index.html";
+                                break;
+                            default:
+                                displayGenericModal("Something went wrong", "Some error occurred while trying to logout")
+                                break;
                         }
                     }
                 });
@@ -48,16 +51,29 @@
         this.show = function () {
             const self = this
 
+            // stop any eventual refresh of the account view
+            if(refreshIntervalId !== undefined) clearInterval(refreshIntervalId);
+
             makeCall("GET", "get-account-list", null, function (x) {
-                if (x.readyState === 4) {
+                if (x.readyState === XMLHttpRequest.DONE) {
                     const message = x.responseText;
-                    if (x.status === 200) {
-                        const accounts = JSON.parse(message);
-                        self.editor(accounts)
-                    } else if (x.status === 502) {
-                        displayGenericModal("Server error", message)
-                    } else {
-                        displayGenericModal("Some error occurred", message)
+                    switch (x.status) {
+                        case 200:
+                            const accounts = JSON.parse(message);
+                            self.editor(accounts)
+                            break;
+                        case 400: // bad request
+                            displayGenericModal("Bad request", message)
+                            break;
+                        case 401:
+                            displayGenericModal("Unauthorized", message)
+                            break;
+                        case 500: // server error
+                            displayGenericModal("Server error", message)
+                            break;
+                        case 502:
+                            displayGenericModal("Bad gateway", message)
+                            break;
                     }
                 }
             });
@@ -126,6 +142,9 @@
                     }
                 }
             });
+
+            // start refresh (every second)
+            refreshIntervalId = setInterval(self.refresh, 1000);
         }
 
         this.editor = function (account, contacts, lastMonthTransactions, lastYearTransactions, previousTransactions) {
@@ -225,6 +244,62 @@
             autocomplete(document.getElementById("beneficiary-username"), usernamesInContacts);
             // share globally accounts for every contact, so it can be used later for the auto completer of account code field
             globalThis.usernamesAccountsInContacts = usernamesAccountsInContacts
+        }
+
+        // gets updated data and refreshes balance and transactions
+        this.refresh = function () {
+            let accountID = document.getElementById("account-link").getAttribute("account")
+
+            makeCall("GET", "get-account?id=" + accountID, null, function (x) {
+                if (x.readyState === XMLHttpRequest.DONE) {
+                    const message = x.responseText;
+                    switch (x.status) {
+                        case 200:
+                            const response = JSON.parse(message);
+                            const account = response[0];
+                            const lastMonthTransactions = response[2];
+                            const lastYearTransactions = response[3];
+                            const previousTransactions = response[4];
+
+                            // current time
+                            const time = "Updated at " + new Date().toLocaleTimeString("en-US")
+
+                            // refresh balance
+                            document.getElementById("last-update-balance").innerText = time
+                            document.getElementById("balance").innerText = currencyFormatter.format(account.balance)
+
+                            // refresh the transactions
+                            document.getElementById("last-update-transactions").innerText = time
+                            let transactions = ""
+                            if (lastMonthTransactions.length > 0) {
+                                let SECTION_TITLE = `<h6 class="text-uppercase text-body text-xs font-weight-bolder mb-3">Last month</h6>`
+                                transactions += SECTION_TITLE
+
+                                let TRANSACTION_CONTAINER = `<ul id="c" class="list-group">${markupFromTransactions(lastMonthTransactions)}</ul>`
+                                transactions += TRANSACTION_CONTAINER
+                            }
+                            if (lastYearTransactions.length > 0) {
+                                let SECTION_TITLE = `<h6 class="text-uppercase text-body text-xs font-weight-bolder mb-3">Last year</h6>`
+                                transactions += SECTION_TITLE
+
+                                let TRANSACTION_CONTAINER = `<ul id="c" class="list-group">${markupFromTransactions(lastYearTransactions)}</ul>`
+                                transactions += TRANSACTION_CONTAINER
+                            }
+                            if (previousTransactions.length > 0) {
+                                let SECTION_TITLE = `<h6 class="text-uppercase text-body text-xs font-weight-bolder mb-3">Previous</h6>`
+                                transactions += SECTION_TITLE
+
+                                let TRANSACTION_CONTAINER = `<ul id="c" class="list-group">${markupFromTransactions(previousTransactions)}</ul>`
+                                transactions += TRANSACTION_CONTAINER
+                            }
+                            document.getElementById("transactions").innerHTML = transactions
+                            break;
+                        default:
+                            console.log("Couldn't refresh balance and transactions")
+                            break;
+                    }
+                }
+            });
         }
     }
 

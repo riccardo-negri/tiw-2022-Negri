@@ -14,16 +14,14 @@ if (localStorage.getItem("user") !== null) {
     });
 }
 
-// check every second if user is logged in
+// check every 100 milliseconds if the user is logged in
 setInterval(function () {
     if (-1 === document.location.href.indexOf("app.html") && localStorage.getItem("user") !== null) {
-        console.log("redirect 1")
         document.location.href = "app.html"
     } else if (!(-1 === document.location.href.indexOf("app.html")) && localStorage.getItem("user") === null) {
-        console.log("redirect 2")
         document.location.href = "index.html"
     }
-}, 1000);
+}, 100);
 
 function makeCall(method, url, formElement, callBack, reset = true) {
     const req = new XMLHttpRequest(); // visible by closure

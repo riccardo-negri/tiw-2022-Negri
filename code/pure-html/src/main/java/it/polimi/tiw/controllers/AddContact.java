@@ -83,7 +83,8 @@ public class AddContact extends AbstractServlet {
         try {
             contactDAO.addContact(user.id(), Integer.parseInt(accountToAdd));
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Not possible to add contact");
+            return;
         }
 
         // everything went well, can go back to the account page

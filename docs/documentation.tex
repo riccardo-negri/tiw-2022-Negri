@@ -14,6 +14,10 @@
 \setlength\parindent{0pt} % Removes all indentation from paragraphs
 \usepackage{minted}
 
+\usepackage{tikz}
+\usetikzlibrary{arrows,shadows}
+\usepackage{pgf-umlsd}
+
 \title{\vspace{-2cm}Progetto di Tecnologie Informatiche per il Web} % Title
 \author{Negri Riccardo} % Author name
 \date{\today}
@@ -120,20 +124,41 @@ L’applicazione deve garantire l’atomicità del trasferimento: ogni volta che
 destinazione viene addebitato, il conto di origine deve essere accreditato. Ogni pagina
 contiene un collegamento per tornare alla pagina precedente. L’applicazione consente il
 logout dell’utente.
+\\
+\\
+Si realizzi un’applicazione client server web che modifica le specifiche precedenti come segue:
+\begin{itemize}
+	\item La registrazione controlla la validità sintattica dell’indirizzo di email e l’uguaglianza tra
+	i campi “password” e “ripeti password”, anche a lato client.
+	\item Dopo il login, l’intera applicazione è realizzata con un’unica pagina.
+	\item 	Ogni interazione dell’utente è gestita senza ricaricare completamente la pagina, ma
+	produce l’invocazione asincrona del server e l’eventuale modifica del contenuto da
+	aggiornare a seguito dell’evento.
+	\item I controlli di validità dei dati di input (ad esempio importo non nullo e maggiore di zero)
+	devono essere realizzati anche a lato client.
+	\item L’avviso di fallimento è realizzato mediante un messaggio nella pagina che ospita
+	l’applicazione.
+	\item L’applicazione chiede all’utente se vuole  \textcolor{blue}{inserire nella propria rubrica i dati del
+	destinatario} di un trasferimento andato a buon fine non ancora presente. Se l’utente
+	conferma, i dati sono memorizzati nella base di dati e usati per semplificare
+	l’inserimento. Quando l’utente crea un trasferimento, l’applicazione propone mediante
+	una funzione di auto-completamento i destinatari in rubrica il cui codice corrisponde
+	alle lettere inserite nel campo codice utente destinatario.
+\end{itemize}
 
-\subsection{Progetto concettuale - Diagramma E-R (Entità-Relazione)}
-Da aggiornare - deve esistere sempre un conto associato ad un utente, anche quando si registra
-\begin{figure}[H]
+\subsection{Progetto concettuale - Diagramma E-R (Entità-Relazione)}\begin{figure}[H]
 \centering
 \includegraphics[width=1\textwidth]{assets/diagram.eps}
 \end{figure}
 
 \subsection{Progetto logico}
-UTENTE(\underline{ID}, username, email, password, nome, cognome)
+USER(\underline{ID}, username, email, encoded, name, surname)
 \\
-CONTO(\underline{ID}, codice, saldo, utente)
+ACCOUNT(\underline{ID}, code, balance, user)
 \\
-TRASFERIMENTO(\underline{ID}, data, importo, causale, origine, destinazione)
+TRANSACTION(\underline{ID}, timestamp, amount, reason, origin, destination)
+\\
+CONTACT(\underline{owner}, \underline{element})
 
 \subsection{Database schema}
 Nel db tutti gli on delete sono no action perché ho la necessità di mantenere le informazioni per il futuro (da argomentare meglio)
@@ -144,7 +169,6 @@ CREATE DATABASE tiw_db;
 \end{minted}
 
 Statements per creare le tabelle: 
-encode perchè uso Argon2, così anche brute force resistant
 \begin{minted}{mysql}
 CREATE TABLE `tiw_db`.`user` (
 	`id` INT NOT NULL AUTO_INCREMENT,
@@ -156,7 +180,7 @@ CREATE TABLE `tiw_db`.`user` (
 	PRIMARY KEY (`id`)
 );
 \end{minted}
-\pagebreak
+
 \begin{minted}{mysql}
 CREATE TABLE `tiw_db`.`account` (
 	`id` INT NOT NULL AUTO_INCREMENT,
@@ -187,13 +211,13 @@ CREATE TABLE `tiw_db`.`transaction` (
 			ON DELETE NO ACTION ON UPDATE CASCADE
 );
 \end{minted}
+\pagebreak
 
 \begin{minted}{mysql}
 CREATE TABLE `tiw_db`.`contact` (
-	`id` INT NOT NULL AUTO_INCREMENT,
-	`owner` INT NOT NULL,
-	`element` INT NOT NULL,
-	PRIMARY KEY (`id`),
+	`owner` INT,
+	`element` INT,
+	PRIMARY KEY (`owner`, `element`),
 	CONSTRAINT `contact_owner` FOREIGN KEY (`owner`) 
 		REFERENCES `tiw_db`.`user` (`id`)
 			ON DELETE NO ACTION ON UPDATE CASCADE,
@@ -203,8 +227,29 @@ CREATE TABLE `tiw_db`.`contact` (
 );
 \end{minted}
 
+\subsection{Hashing della password}
+Si è deciso di usare Argon2 come algoritmo di hash delle password. Argon2 applica una funzione pseudocasuale alla password o passphrase di input insieme a un valore \texttt{salt} e ripete il processo molte volte per produrre una chiave derivata, che può quindi essere utilizzata come chiave crittografica nelle operazioni successive. Il lavoro di calcolo aggiunto rende molto più difficile il cracking delle password ed è noto come \texttt{key stretching}. Infatti è volutamente dispendioso in termini computazionali.
+\\\\
+Il motivo per cui si utilizza un \texttt{salt} durante l'hashing delle password è che randomizzano l'hash generato per lo stesso valore di input. Quindi, se due utenti hanno la stessa password, i loro hash saranno comunque diversi. Ciò rallenterà ulteriormente il processo di decifrazione della password da parte di un avversario.
+\\
+Argon2 genera internamente un nuovo \texttt{salt} per ogni nuova richiesta di generare un hash. Quindi, se si richiede un hash per lo stesso testo in chiaro più volte, ogni volta si ottiene un hash diverso. 
+\\ \\
+Di seguito un esempio di come viene salvata nel database l'informazione necessaria per verificare la password di un utente:\\ \texttt{\$argon2i\$v=19\$m=65536,t=10,p=1\$PCMn0NBsYymo2jJIeoVwsA\$rmrwpTVQks5s\\LsUKBfImzV9/b0HwF9hZKe1b5dQWwYo}
+\\
+Analisi dei valori:
+\begin{itemize}
+	\item \texttt{argon2i} indica la  variante di Argon2 in uso;
+	\item \texttt{v=19} indica la versione di Argon;
+	\item \texttt{m=65536} indica l'utilizzo di memoria;
+	\item \texttt{t=10} indica le iterazioni;
+	\item \texttt{p=1} indica il numero di thread da utilizzare;
+	\item \texttt{PCMn0NBsYymo2jJIeoVwsA} è il \texttt{salt} di 16 byte;
+	\item \texttt{rmrwpTVQks5sLsUKBfImzV9/b0HwF9hZKe1b5dQWwYo} è l'\texttt{hash} di 32 byte.
+\end{itemize}
+Sul computer in uso al momento la validazione di una password rispetto all'\texttt{encoded} sopra ripotato impiega circa 400ms. 
+
 \subsection{Script Python per popolare il database}
-Al fine di popolare automaticamente un nuovo database è stato creato uno script in Python chiamato "populate-tiw-db.py." 
+Al fine di popolare automaticamente un nuovo database è stato creato uno script in Python chiamato "populate-tiw-db.py" .
 
 \section{Versione pure HTML}
 
@@ -228,20 +273,37 @@ contiene i campi: codice utente destinatario, codice conto destinatario, causale
 All’invio della form con il bottone INVIA, l’applicazione controlla che il conto di destinazione
 appartenga all’utente specificato e che il conto origine abbia un saldo superiore o uguale
 all’importo del trasferimento. In caso di mancanza di anche solo una condizione, l’applicazione
-mostra una \textcolor{red}{pagina con un avviso di fallimento} che spiega il motivo del mancato trasferimento.
-Nel caso in cui entrambe le condizioni siano soddisfatte, l’applicazione deduce l’importo dal
-conto di origine, aggiunge l’importo al conto di destinazione e mostra una \textcolor{red}{pagina CONFERMA
-TRASFERIMENTO} che presenta i dati dell’importo trasferito e i dati del conto di origine e di
-destinazione con i rispettivi saldi precedenti al trasferimento e aggiornati dopo il trasferimento.
+mostra una \textcolor{red}{pagina con un avviso di fallimento} che spiega il \textcolor{ForestGreen}{motivo del mancato trasferimento}.
+Nel caso in cui entrambe le condizioni siano soddisfatte, l’applicazione \textcolor{brown}{deduce l’importo dal
+conto di origine, aggiunge l’importo al conto di destinazione} e mostra una \textcolor{red}{pagina CONFERMA
+TRASFERIMENTO} che presenta i \textcolor{ForestGreen}{dati dell’importo trasferito e i dati del conto di origine e di
+destinazione con i rispettivi saldi precedenti al trasferimento e aggiornati dopo il trasferimento}.
 L’applicazione deve garantire l’atomicità del trasferimento: ogni volta che il conto di
 destinazione viene addebitato, il conto di origine deve essere accreditato. Ogni pagina
-contiene un collegamento per tornare alla pagina precedente. L’applicazione consente il
-logout dell’utente.
+contiene un \textcolor{ForestGreen}{collegamento per tornare alla pagina precedente}. L’applicazione consente il
+ \textcolor{blue}{logout} dell’utente.
 
 \subsection{Completamento specifiche}
-Nella rubrica viene aggiunto un conto di un utente, non tutti i conti dell'utente!
-La rubrica è dell'utente, non del singolo conto. Quindi è globale all'utente.
+\begin{itemize}
+	\item E' stata creata anche una pagina per visualizzare le informazioni dell'utente
+	\item Si è deciso di implementare la gestione dei contatti e la possibilità di aggiungere un conto ai contatti anche nella versione pure HTML
+	\item Nella rubrica viene aggiunto solo un conto relativo ad un utente, non tutti i conti di un singolo utente
+	\item La rubrica è relativa all'utente e non al conto, quindi tutte le pagine dei conti di un utente vedranno la stessa rubrica
+\end{itemize}
+
+\subsection{Sequence diagrams}
+\begin{sequencediagram}
+	\newinst{c}{Client}
+	\newinst[2]{s}{Server}
+	\newthread{g}{game: Game}
+	\begin{call}{c}{doGet}{s}{loginPage}
+	\end{call}
+	
+\end{sequencediagram}
+
 \section{Versione RIA}
+
+
 
 
 \end{document}

@@ -17,10 +17,12 @@
 \usepackage{tikz}
 \usetikzlibrary{arrows,shadows}
 \usepackage{pgf-umlsd}
+\usepackage{wrapfig}
 
 \title{\vspace{-2cm}Progetto di Tecnologie Informatiche per il Web} % Title
 \author{Negri Riccardo} % Author name
 \date{\today}
+
 
 \begin{document}
 
@@ -128,25 +130,26 @@ logout dell’utente.
 \\
 Si realizzi un’applicazione client server web che modifica le specifiche precedenti come segue:
 \begin{itemize}
-	\item La registrazione controlla la validità sintattica dell’indirizzo di email e l’uguaglianza tra
-	i campi “password” e “ripeti password”, anche a lato client.
-	\item Dopo il login, l’intera applicazione è realizzata con un’unica pagina.
-	\item 	Ogni interazione dell’utente è gestita senza ricaricare completamente la pagina, ma
-	produce l’invocazione asincrona del server e l’eventuale modifica del contenuto da
-	aggiornare a seguito dell’evento.
-	\item I controlli di validità dei dati di input (ad esempio importo non nullo e maggiore di zero)
-	devono essere realizzati anche a lato client.
-	\item L’avviso di fallimento è realizzato mediante un messaggio nella pagina che ospita
-	l’applicazione.
-	\item L’applicazione chiede all’utente se vuole  \textcolor{blue}{inserire nella propria rubrica i dati del
-	destinatario} di un trasferimento andato a buon fine non ancora presente. Se l’utente
-	conferma, i dati sono memorizzati nella base di dati e usati per semplificare
-	l’inserimento. Quando l’utente crea un trasferimento, l’applicazione propone mediante
-	una funzione di auto-completamento i destinatari in rubrica il cui codice corrisponde
-	alle lettere inserite nel campo codice utente destinatario.
+\item La registrazione controlla la validità sintattica dell’indirizzo di email e l’uguaglianza tra
+i campi “password” e “ripeti password”, anche a lato client.
+\item Dopo il login, l’intera applicazione è realizzata con un’unica pagina.
+\item 	Ogni interazione dell’utente è gestita senza ricaricare completamente la pagina, ma
+produce l’invocazione asincrona del server e l’eventuale modifica del contenuto da
+aggiornare a seguito dell’evento.
+\item I controlli di validità dei dati di input (ad esempio importo non nullo e maggiore di zero)
+devono essere realizzati anche a lato client.
+\item L’avviso di fallimento è realizzato mediante un messaggio nella pagina che ospita
+l’applicazione.
+\item L’applicazione chiede all’utente se vuole  \textcolor{blue}{inserire nella propria rubrica i dati del
+destinatario} di un trasferimento andato a buon fine non ancora presente. Se l’utente
+conferma, i dati sono memorizzati nella base di dati e usati per semplificare
+l’inserimento. Quando l’utente crea un trasferimento, l’applicazione propone mediante
+una funzione di auto-completamento i destinatari in rubrica il cui codice corrisponde
+alle lettere inserite nel campo codice utente destinatario.
 \end{itemize}
 
-\subsection{Progetto concettuale - Diagramma E-R (Entità-Relazione)}\begin{figure}[H]
+\subsection{Progetto concettuale - Diagramma E-R (Entità-Relazione)}
+\begin{figure}[H]
 \centering
 \includegraphics[width=1\textwidth]{assets/diagram.eps}
 \end{figure}
@@ -171,59 +174,59 @@ CREATE DATABASE tiw_db;
 Statements per creare le tabelle: 
 \begin{minted}{mysql}
 CREATE TABLE `tiw_db`.`user` (
-	`id` INT NOT NULL AUTO_INCREMENT,
-	`username` VARCHAR(45) NOT NULL UNIQUE,
-	`email` VARCHAR(45) NOT NULL UNIQUE,
-	`encoded` VARCHAR(255) NOT NULL,
-	`name` VARCHAR(45) NOT NULL,
-	`surname` VARCHAR(45) NOT NULL,
-	PRIMARY KEY (`id`)
+`id` INT NOT NULL AUTO_INCREMENT,
+`username` VARCHAR(45) NOT NULL UNIQUE,
+`email` VARCHAR(45) NOT NULL UNIQUE,
+`encoded` VARCHAR(255) NOT NULL,
+`name` VARCHAR(45) NOT NULL,
+`surname` VARCHAR(45) NOT NULL,
+PRIMARY KEY (`id`)
 );
 \end{minted}
 
 \begin{minted}{mysql}
 CREATE TABLE `tiw_db`.`account` (
-	`id` INT NOT NULL AUTO_INCREMENT,
-	`code` CHAR(12) NOT NULL UNIQUE,
-	`balance` FLOAT NOT NULL DEFAULT 0,
-	`user` INT NOT NULL,
-	PRIMARY KEY (`id`),
-	CONSTRAINT `user_account` FOREIGN KEY (`user`) 
-		REFERENCES `tiw_db`.`user` (`id`) 
-			ON DELETE NO ACTION ON UPDATE CASCADE
+`id` INT NOT NULL AUTO_INCREMENT,
+`code` CHAR(12) NOT NULL UNIQUE,
+`balance` FLOAT NOT NULL DEFAULT 0,
+`user` INT NOT NULL,
+PRIMARY KEY (`id`),
+CONSTRAINT `user_account` FOREIGN KEY (`user`) 
+REFERENCES `tiw_db`.`user` (`id`) 
+ON DELETE NO ACTION ON UPDATE CASCADE
 );
 \end{minted}
 
 \begin{minted}{mysql}
 CREATE TABLE `tiw_db`.`transaction` (
-	`id` INT NOT NULL AUTO_INCREMENT,
-	`timestamp` DATETIME DEFAULT CURRENT_TIMESTAMP,
-	`amount` FLOAT NOT NULL,
-	`reason` VARCHAR(255) NOT NULL,
-	`origin` INT NOT NULL,
-	`destination` INT NOT NULL,
-	PRIMARY KEY (`id`),
-	CONSTRAINT `transaction_origin` FOREIGN KEY (`origin`) 
-		REFERENCES `tiw_db`.`account` (`id`)
-			ON DELETE NO ACTION ON UPDATE CASCADE,
-	CONSTRAINT `transaction_destination` FOREIGN KEY (`destination`) 
-		REFERENCES `tiw_db`.`account` (`id`) 
-			ON DELETE NO ACTION ON UPDATE CASCADE
+`id` INT NOT NULL AUTO_INCREMENT,
+`timestamp` DATETIME DEFAULT CURRENT_TIMESTAMP,
+`amount` FLOAT NOT NULL,
+`reason` VARCHAR(255) NOT NULL,
+`origin` INT NOT NULL,
+`destination` INT NOT NULL,
+PRIMARY KEY (`id`),
+CONSTRAINT `transaction_origin` FOREIGN KEY (`origin`) 
+REFERENCES `tiw_db`.`account` (`id`)
+ON DELETE NO ACTION ON UPDATE CASCADE,
+CONSTRAINT `transaction_destination` FOREIGN KEY (`destination`) 
+REFERENCES `tiw_db`.`account` (`id`) 
+ON DELETE NO ACTION ON UPDATE CASCADE
 );
 \end{minted}
 \pagebreak
 
 \begin{minted}{mysql}
 CREATE TABLE `tiw_db`.`contact` (
-	`owner` INT,
-	`element` INT,
-	PRIMARY KEY (`owner`, `element`),
-	CONSTRAINT `contact_owner` FOREIGN KEY (`owner`) 
-		REFERENCES `tiw_db`.`user` (`id`)
-			ON DELETE NO ACTION ON UPDATE CASCADE,
-	CONSTRAINT `contact_element` FOREIGN KEY (`element`) 
-		REFERENCES `tiw_db`.`account` (`id`) 
-			ON DELETE NO ACTION ON UPDATE CASCADE
+`owner` INT,
+`element` INT,
+PRIMARY KEY (`owner`, `element`),
+CONSTRAINT `contact_owner` FOREIGN KEY (`owner`) 
+REFERENCES `tiw_db`.`user` (`id`)
+ON DELETE NO ACTION ON UPDATE CASCADE,
+CONSTRAINT `contact_element` FOREIGN KEY (`element`) 
+REFERENCES `tiw_db`.`account` (`id`) 
+ON DELETE NO ACTION ON UPDATE CASCADE
 );
 \end{minted}
 
@@ -238,13 +241,13 @@ Di seguito un esempio di come viene salvata nel database l'informazione necessar
 \\
 Analisi dei valori:
 \begin{itemize}
-	\item \texttt{argon2i} indica la  variante di Argon2 in uso;
-	\item \texttt{v=19} indica la versione di Argon;
-	\item \texttt{m=65536} indica l'utilizzo di memoria;
-	\item \texttt{t=10} indica le iterazioni;
-	\item \texttt{p=1} indica il numero di thread da utilizzare;
-	\item \texttt{PCMn0NBsYymo2jJIeoVwsA} è il \texttt{salt} di 16 byte;
-	\item \texttt{rmrwpTVQks5sLsUKBfImzV9/b0HwF9hZKe1b5dQWwYo} è l'\texttt{hash} di 32 byte.
+\item \texttt{argon2i} indica la  variante di Argon2 in uso;
+\item \texttt{v=19} indica la versione di Argon;
+\item \texttt{m=65536} indica l'utilizzo di memoria;
+\item \texttt{t=10} indica le iterazioni;
+\item \texttt{p=1} indica il numero di thread da utilizzare;
+\item \texttt{PCMn0NBsYymo2jJIeoVwsA} è il \texttt{salt} di 16 byte;
+\item \texttt{rmrwpTVQks5sLsUKBfImzV9/b0HwF9hZKe1b5dQWwYo} è l'\texttt{hash} di 32 byte.
 \end{itemize}
 Sul computer in uso al momento la validazione di una password rispetto all'\texttt{encoded} sopra ripotato impiega circa 400ms. 
 
@@ -281,25 +284,246 @@ destinazione con i rispettivi saldi precedenti al trasferimento e aggiornati dop
 L’applicazione deve garantire l’atomicità del trasferimento: ogni volta che il conto di
 destinazione viene addebitato, il conto di origine deve essere accreditato. Ogni pagina
 contiene un \textcolor{ForestGreen}{collegamento per tornare alla pagina precedente}. L’applicazione consente il
- \textcolor{blue}{logout} dell’utente.
+\textcolor{blue}{logout} dell’utente.
 
 \subsection{Completamento specifiche}
 \begin{itemize}
-	\item E' stata creata anche una pagina per visualizzare le informazioni dell'utente
-	\item Si è deciso di implementare la gestione dei contatti e la possibilità di aggiungere un conto ai contatti anche nella versione pure HTML
-	\item Nella rubrica viene aggiunto solo un conto relativo ad un utente, non tutti i conti di un singolo utente
-	\item La rubrica è relativa all'utente e non al conto, quindi tutte le pagine dei conti di un utente vedranno la stessa rubrica
+\item E' stata creata anche una pagina per visualizzare le informazioni dell'utente
+\item Si è deciso di implementare la gestione dei contatti e la possibilità di aggiungere un conto ai contatti anche nella versione pure HTML
+\item Nella rubrica viene aggiunto solo un conto relativo ad un utente, non tutti i conti di un singolo utente
+\item La rubrica è relativa all'utente e non al conto, quindi tutte le pagine dei conti di un utente vedranno la stessa rubrica
 \end{itemize}
 
-\subsection{Sequence diagrams}
+\subsection{Application Design}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=1\textwidth]{assets/ifml_pure.png}
+\end{figure}
+
+\subsection{Componenti}
+\begin{itemize}
+	\item Model Objects (Beans)
+	\begin{itemize}
+		\item Account
+		\item Contact
+		\item Transaction
+		\item User
+	\end{itemize}
+	\item Data Access Objects (Classes)
+	\begin{itemize}
+		\item AccountDAO
+		\item ContactDAO
+		\item TransactionDAO
+		\item UserDAO
+	\end{itemize}
+	\item Controllers (servlets)
+	\begin{itemize}
+		\item AccountPage
+		\item AddContact
+		\item ErrorPage
+		\item HomePage
+		\item Login
+		\item Logout
+		\item MakeTransaction
+		\item ProfilePage
+		\item Registration
+		\item TransactionOutcomePage
+	\end{itemize}
+	\item Filters
+	\begin{itemize}
+		\item AlreadyLoggedInChecker
+		\item LoginChecker
+	\end{itemize}
+	\item Utils
+	\begin{itemize}
+		\item ConnectionHandler
+		\item ParameterValidator
+		\item PasswordHashing
+	\end{itemize}
+	\item Views (Templates)
+	\begin{itemize}
+		\item account.html
+		\item error.html
+		\item home.html
+		\item login.html
+		\item profile.html
+		\item registration.html
+		\item transaction-outcome.html
+	\end{itemize}
+	\item Fragments (Templates)
+	\begin{itemize}
+		\item navbar.html
+		\item sidebar.html
+	\end{itemize}
+\end{itemize}
+
+\subsection{Eventi}
+Precisiazioni riguardo ai sequence diagram: con "processed" si intende il file HTML processato tramite \texttt{templateEngine.process()} dopo avere impostato le oppurtune variabili nel \texttt{context}; si assume che le get e le post di seguito rappresentate abbiano già superato i controlli presenti nei filtri.
+\subsubsection{Login}
 \begin{sequencediagram}
-	\newinst{c}{Client}
-	\newinst[2]{s}{Server}
-	\newthread{g}{game: Game}
-	\begin{call}{c}{doGet}{s}{loginPage}
-	\end{call}
-	
+\newinst{client}{Client}
+\newinst[5]{login}{Login}
+\newinst[4]{dao}{UserDAO}
+\begin{call}{client}{doPost(usr, psd)}{login}{redirect to /home}
+\begin{call}{login}{validateParameters()}{login}{boolean}
+\end{call}
+\mess{login}{if false: processed index.html}{client}
+\begin{call}{login}{checkUserLogin(usr, psw)}{dao}{user}
+\end{call}
+\mess{login}{if exception: processed login.html}{client}
+\mess{login}{if user === null: processed index.html}{client}
+\begin{call}{login}{session.setAttribute(user)}{login}{}
+\end{call}
+\end{call}
 \end{sequencediagram}
+
+\subsubsection{Registrazione}
+\begin{sequencediagram}
+\newinst{client}{Client}
+\newinst[5]{reg}{Registration}
+\newinst[4]{dao}{UserDAO}
+\begin{call}{client}{doPost(usr, email, psw, control, ...)}{reg}{redirect to /login}
+\begin{call}{reg}{validateParameters()}{reg}{boolean}
+\end{call}
+\mess{reg}{if false: processed registration.html}{client}
+\begin{call}{reg}{existsUserWithUsername(usr)}{dao}{boolean}
+\end{call}
+\mess{reg}{if true: processed registration.html}{client}
+\begin{call}{reg}{existsUserWithEmail(email)}{dao}{boolean}
+\end{call}
+\mess{reg}{if true: processed registration.html}{client}
+\begin{call}{reg}{createUser(usr, email, psw, ...)}{dao}{boolean}
+\end{call}
+\mess{reg}{if exception: processed registration.html}{client}
+\end{call}
+\end{sequencediagram}
+
+\subsubsection{Accesso Home Page}
+\begin{sequencediagram}
+\newinst{client}{Client}
+\newinst[5]{home}{HomePage}
+\newinst[4]{dao}{AccountDAO}
+\begin{call}{client}{doGet()}{home}{processed home.html}
+\begin{call}{home}{user = session.getAttribute("user")}{home}{}
+\end{call}
+\begin{call}{home}{findAccountsWithLastActivity(userId)}{dao}{accounts}
+\end{call}
+\mess{home}{if exception: sendError}{client}
+\end{call}
+\end{sequencediagram}
+
+\subsubsection{Accesso Account Page}
+\begin{sequencediagram}
+\newinst{client}{Client}
+\newinst[2]{page}{AccountPage}
+\newinst[3]{dao1}{AccountDAO}
+\newinst{dao2}{ContactDAO}
+\begin{call}{client}{doGet()}{page}{processed account.html}
+	\begin{call}{page}{user = session.getAttribute("user")}{page}{}
+	\end{call}
+	\begin{call}{page}{validateParameters()}{page}{}
+	\end{call}
+	\begin{mess}{page}{if false: sendError}{client}
+	\end{mess}
+	\begin{call}{page}{checkAccountID()}{page}{}
+	\begin{call}{page}{getAccountFromID}{dao1}{account}
+	\end{call}
+	\end{call}
+	\begin{mess}{page}{if not valid: sendError}{client}
+	\end{mess}
+	\begin{call}{page}{findTransactions(accountID)}{dao1}{accountTransactions}
+	\end{call}
+	\begin{call}{page}{findContactsFromUserID(userId)}{dao2}{contacts}
+	\end{call}
+\mess{page}{if exception: sendError}{client}
+\end{call}
+\end{sequencediagram}
+
+\subsubsection{Esegui Transazione}
+\begin{sequencediagram}
+	\newinst{client}{Client}
+	\newinst[2]{make}{MakeTransaction}
+	\newinst[1]{dao1}{AccountDAO}
+	\newinst{dao2}{UserDAO}
+	\newinst{dao3}{TransactionDAO}
+	\begin{call}{client}{doPost()}{make}{redirect to /transaction-outcome?id=...}
+		\begin{call}{make}{user = session.getAttribute("user")}{make}{}
+		\end{call}
+	
+		\begin{call}{make}{validateParameters()}{make}{}
+			\begin{call}{make}{getAccount(originCode)}{dao1}{user}
+			\end{call}
+		\end{call}
+		\mess{make}{if false: sendError}{client}
+		\mess{make}{if exception: sendError}{client}
+		
+		\begin{call}{make}{checkConditions()}{make}{}
+			\begin{call}{make}{getAccount(destinationCode)}{dao1}{user}
+			\end{call}
+		\begin{call}{make}{getUserFromUsername(usr)}{dao2}{user}
+		\end{call}
+		\end{call}
+		\mess{make}{if false: redirect to transaction-outcome?failed=...}{client}
+		\mess{make}{if exception: sendError}{client}
+		
+		\begin{call}{make}{addTransaction(amount, reason, origin, dest)}{dao3}{transactionId}
+		\end{call}
+		\mess{make}{if exception: sendError}{client}
+	\end{call}
+\end{sequencediagram}
+
+\subsubsection{Esito transazione}
+\begin{sequencediagram}
+	\newinst{client}{Client}
+	\newinst[2]{page}{TransactionOutcomePage}
+	\newinst[1]{dao1}{TransactionDAO}
+	\newinst{dao2}{AccountDAO}
+	\newinst{dao3}{ContactDAO}
+	\begin{call}{client}{doGet()}{page}{processed transaction-outcome.html}
+		\begin{call}{page}{user = session.getAttribute("user")}{page}{}
+		\end{call}
+		\begin{call}{page}{validateParameters()}{page}{}
+			\begin{call}{page}{getTransaction(id)}{dao1}{transaction}
+			\end{call}
+		\end{call}
+		\mess{page}{if false: sendError}{client}
+		\mess{page}{if exception: sendError}{client}
+	
+		\begin{call}{page}{getAccountFromCode(origin)}{dao2}{account}
+		\end{call}
+	\begin{call}{page}{getAccountFromCode(dest)}{dao2}{account}
+	\end{call}
+		\begin{call}{page}{isAccountInContacts(userId), account}{dao3}{boolean}
+		\end{call}
+		\mess{page}{if exception: sendError}{client}
+	\end{call}
+\end{sequencediagram}
+
+\subsubsection{Aggiunta contatto}
+\begin{sequencediagram}
+\newinst{client}{Client}
+\newinst[3]{add}{AddContact}
+\newinst[3]{dao1}{AccountDAO}
+\newinst{dao2}{ContactDAO}
+\begin{call}{client}{doPost(usr, email, psw, control, ...)}{add}{redirect to /account?id=...}
+	\begin{call}{add}{user = session.getAttribute("user")}{add}{}
+	\end{call}
+
+	\begin{call}{add}{validateParameters()}{add}{}
+		\begin{call}{add}{getAccount(id)}{dao1}{account}
+		\end{call}
+		\begin{call}{add}{isAccountInContacts(userId, account)}{dao2}{boolean}
+		\end{call}
+	\end{call}
+	\mess{add}{if false: sendError}{client}
+	\mess{add}{if exception: sendError}{client}
+
+	\begin{call}{add}{addContact(userId, account}{dao2}{account}
+	\end{call}
+	\mess{add}{if exception: sendError}{client}
+\end{call}
+\end{sequencediagram}
+
 
 \section{Versione RIA}
 

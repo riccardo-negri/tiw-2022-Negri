@@ -21,7 +21,7 @@
 
 \title{\vspace{-2cm}Progetto di Tecnologie Informatiche per il Web} % Title
 \author{Negri Riccardo} % Author name
-\date{\today}
+\date{17 Giugno 2022}
 
 
 \begin{document}
@@ -164,74 +164,73 @@ TRANSACTION(\underline{ID}, timestamp, amount, reason, origin, destination)
 CONTACT(\underline{owner}, \underline{element})
 
 \subsection{Database schema}
-Nel db tutti gli on delete sono no action perché ho la necessità di mantenere le informazioni per il futuro (da argomentare meglio)
-
 Statement per creare il database:
 \begin{minted}{mysql}
 CREATE DATABASE tiw_db;
 \end{minted}
 
+\pagebreak
 Statements per creare le tabelle: 
 \begin{minted}{mysql}
 CREATE TABLE `tiw_db`.`user` (
-`id` INT NOT NULL AUTO_INCREMENT,
-`username` VARCHAR(45) NOT NULL UNIQUE,
-`email` VARCHAR(45) NOT NULL UNIQUE,
-`encoded` VARCHAR(255) NOT NULL,
-`name` VARCHAR(45) NOT NULL,
-`surname` VARCHAR(45) NOT NULL,
-PRIMARY KEY (`id`)
+	`id` INT NOT NULL AUTO_INCREMENT,
+	`username` VARCHAR(45) NOT NULL UNIQUE,
+	`email` VARCHAR(45) NOT NULL UNIQUE,
+	`encoded` VARCHAR(255) NOT NULL,
+	`name` VARCHAR(45) NOT NULL,
+	`surname` VARCHAR(45) NOT NULL,
+	PRIMARY KEY (`id`)
 );
 \end{minted}
 
 \begin{minted}{mysql}
 CREATE TABLE `tiw_db`.`account` (
-`id` INT NOT NULL AUTO_INCREMENT,
-`code` CHAR(12) NOT NULL UNIQUE,
-`balance` FLOAT NOT NULL DEFAULT 0,
-`user` INT NOT NULL,
-PRIMARY KEY (`id`),
-CONSTRAINT `user_account` FOREIGN KEY (`user`) 
-REFERENCES `tiw_db`.`user` (`id`) 
-ON DELETE NO ACTION ON UPDATE CASCADE
+	`id` INT NOT NULL AUTO_INCREMENT,
+	`code` CHAR(12) NOT NULL UNIQUE,
+	`balance` FLOAT NOT NULL DEFAULT 0,
+	`user` INT NOT NULL,
+	PRIMARY KEY (`id`),
+	CONSTRAINT `user_account` FOREIGN KEY (`user`) 
+		REFERENCES `tiw_db`.`user` (`id`) 
+			ON DELETE NO ACTION ON UPDATE CASCADE
 );
 \end{minted}
 
 \begin{minted}{mysql}
 CREATE TABLE `tiw_db`.`transaction` (
-`id` INT NOT NULL AUTO_INCREMENT,
-`timestamp` DATETIME DEFAULT CURRENT_TIMESTAMP,
-`amount` FLOAT NOT NULL,
-`reason` VARCHAR(255) NOT NULL,
-`origin` INT NOT NULL,
-`destination` INT NOT NULL,
-PRIMARY KEY (`id`),
-CONSTRAINT `transaction_origin` FOREIGN KEY (`origin`) 
-REFERENCES `tiw_db`.`account` (`id`)
-ON DELETE NO ACTION ON UPDATE CASCADE,
-CONSTRAINT `transaction_destination` FOREIGN KEY (`destination`) 
-REFERENCES `tiw_db`.`account` (`id`) 
-ON DELETE NO ACTION ON UPDATE CASCADE
+	`id` INT NOT NULL AUTO_INCREMENT,
+	`timestamp` DATETIME DEFAULT CURRENT_TIMESTAMP,
+	`amount` FLOAT NOT NULL,
+	`reason` VARCHAR(255) NOT NULL,
+	`origin` INT NOT NULL,
+	`destination` INT NOT NULL,
+	PRIMARY KEY (`id`),
+	CONSTRAINT `transaction_origin` FOREIGN KEY (`origin`) 
+		REFERENCES `tiw_db`.`account` (`id`)
+			ON DELETE NO ACTION ON UPDATE CASCADE,
+	CONSTRAINT `transaction_destination` FOREIGN KEY (`destination`) 
+		REFERENCES `tiw_db`.`account` (`id`) 
+			ON DELETE NO ACTION ON UPDATE CASCADE
 );
 \end{minted}
 \pagebreak
 
 \begin{minted}{mysql}
 CREATE TABLE `tiw_db`.`contact` (
-`owner` INT,
-`element` INT,
-PRIMARY KEY (`owner`, `element`),
-CONSTRAINT `contact_owner` FOREIGN KEY (`owner`) 
-REFERENCES `tiw_db`.`user` (`id`)
-ON DELETE NO ACTION ON UPDATE CASCADE,
-CONSTRAINT `contact_element` FOREIGN KEY (`element`) 
-REFERENCES `tiw_db`.`account` (`id`) 
-ON DELETE NO ACTION ON UPDATE CASCADE
+	`owner` INT,
+	`element` INT,
+	PRIMARY KEY (`owner`, `element`),
+	CONSTRAINT `contact_owner` FOREIGN KEY (`owner`) 
+		REFERENCES `tiw_db`.`user` (`id`)
+			ON DELETE NO ACTION ON UPDATE CASCADE,
+	CONSTRAINT `contact_element` FOREIGN KEY (`element`) 
+		REFERENCES `tiw_db`.`account` (`id`) 
+			ON DELETE NO ACTION ON UPDATE CASCADE
 );
 \end{minted}
 
 \subsection{Hashing della password}
-Si è deciso di usare Argon2 come algoritmo di hash delle password. Argon2 applica una funzione pseudocasuale alla password o passphrase di input insieme a un valore \texttt{salt} e ripete il processo molte volte per produrre una chiave derivata, che può quindi essere utilizzata come chiave crittografica nelle operazioni successive. Il lavoro di calcolo aggiunto rende molto più difficile il cracking delle password ed è noto come \texttt{key stretching}. Infatti è volutamente dispendioso in termini computazionali.
+Si è deciso di usare Argon2 come algoritmo di hashing delle password. Argon2 applica una funzione alla password di input insieme ad un valore \texttt{salt} e ripete il processo molte volte per produrre una chiave derivata, che può quindi essere utilizzata come chiave crittografica nelle operazioni successive. Il lavoro di calcolo aggiunto rende molto più difficile il cracking delle password ed è noto come \texttt{key stretching}, infatti è volutamente dispendioso in termini computazionali.
 \\\\
 Il motivo per cui si utilizza un \texttt{salt} durante l'hashing delle password è che randomizzano l'hash generato per lo stesso valore di input. Quindi, se due utenti hanno la stessa password, i loro hash saranno comunque diversi. Ciò rallenterà ulteriormente il processo di decifrazione della password da parte di un avversario.
 \\
@@ -239,7 +238,8 @@ Argon2 genera internamente un nuovo \texttt{salt} per ogni nuova richiesta di ge
 \\ \\
 Di seguito un esempio di come viene salvata nel database l'informazione necessaria per verificare la password di un utente:\\ \texttt{\$argon2i\$v=19\$m=65536,t=10,p=1\$PCMn0NBsYymo2jJIeoVwsA\$rmrwpTVQks5s\\LsUKBfImzV9/b0HwF9hZKe1b5dQWwYo}
 \\
-Analisi dei valori:
+\\
+Spiegazione dei valori:
 \begin{itemize}
 \item \texttt{argon2i} indica la  variante di Argon2 in uso;
 \item \texttt{v=19} indica la versione di Argon;
@@ -249,10 +249,11 @@ Analisi dei valori:
 \item \texttt{PCMn0NBsYymo2jJIeoVwsA} è il \texttt{salt} di 16 byte;
 \item \texttt{rmrwpTVQks5sLsUKBfImzV9/b0HwF9hZKe1b5dQWwYo} è l'\texttt{hash} di 32 byte.
 \end{itemize}
-Sul computer in uso al momento la validazione di una password rispetto all'\texttt{encoded} sopra ripotato impiega circa 400ms. 
+Sul computer in uso al momento, la validazione di una password rispetto all'\texttt{encoded} sopra ripotato impiega circa 400ms. 
 
 \subsection{Script Python per popolare il database}
-Al fine di popolare automaticamente un nuovo database è stato creato uno script in Python chiamato "populate-tiw-db.py" .
+Al fine di popolare automaticamente un nuovo database è stato scritto uno script in Python chiamato "populate-tiw-db.py" .
+\pagebreak
 
 \section{Versione pure HTML}
 
@@ -263,7 +264,7 @@ Legenda: \textcolor{red}{pagine}, \textcolor{ForestGreen}{view components}, \tex
 Un’applicazione web consente la gestione di trasferimenti di denaro online da un conto a un
 altro. L’applicazione supporta  \textcolor{brown}{registrazione} e  \textcolor{blue}{login} mediante una pagina pubblica con
 opportune  \textcolor{ForestGreen}{form}. La registrazione controlla la validità sintattica dell’indirizzo di email e
-l’uguaglianza tra i campi “password” e “ripeti password”. La registrazione controlla l’unicità
+l’uguaglianza tra i campi “password” e “ripeti password”. La \textcolor{red}{registrazione} controlla l’unicità
 dello username. Un utente ha un nome, un cognome, uno username e uno o più conti correnti.
 Un conto ha un codice, un saldo, e i trasferimenti fatti (in uscita) e ricevuti (in ingresso) dal
 conto. Un trasferimento ha una data, un importo, un conto di origine e un conto di destinazione.
@@ -288,17 +289,19 @@ contiene un \textcolor{ForestGreen}{collegamento per tornare alla pagina precede
 
 \subsection{Completamento specifiche}
 \begin{itemize}
-\item E' stata creata anche una pagina per visualizzare le informazioni dell'utente
 \item Si è deciso di implementare la gestione dei contatti e la possibilità di aggiungere un conto ai contatti anche nella versione pure HTML
 \item Nella rubrica viene aggiunto solo un conto relativo ad un utente, non tutti i conti di un singolo utente
 \item La rubrica è relativa all'utente e non al conto, quindi tutte le pagine dei conti di un utente vedranno la stessa rubrica
+\item Si può accedere alla pagina precedente tramite la barra di navigazione laterale
+\item E' stata creata anche una pagina per visualizzare le informazioni dell'utente
 \end{itemize}
 
-\subsection{Application Design}
+\subsection{Application design}
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=1\textwidth]{assets/ifml_pure.png}
 \end{figure}
+\pagebreak
 
 \subsection{Componenti}
 \begin{itemize}
@@ -358,7 +361,7 @@ contiene un \textcolor{ForestGreen}{collegamento per tornare alla pagina precede
 \end{itemize}
 
 \subsection{Eventi}
-Precisiazioni riguardo ai sequence diagram: con "processed" si intende il file HTML processato tramite \texttt{templateEngine.process()} dopo avere impostato le oppurtune variabili nel \texttt{context}; si assume che le get e le post di seguito rappresentate abbiano già superato i controlli presenti nei filtri.
+Con "processed" si intende il file HTML processato tramite il metodo di Thymeleaf \texttt{templateEngine.process()} dopo avere impostato le oppurtune variabili nel \texttt{context}. Si assume che le get e le post di seguito rappresentate abbiano già superato i controlli presenti nei filtri.
 \subsubsection{Login}
 \makebox[\textwidth][c]{
 \begin{sequencediagram}
@@ -371,8 +374,8 @@ Precisiazioni riguardo ai sequence diagram: con "processed" si intende il file H
 \mess{login}{if false: processed index.html}{client}
 \begin{call}{login}{checkUserLogin(usr, psw)}{dao}{user}
 \end{call}
-\mess{login}{if exception: processed login.html}{client}
-\mess{login}{if user === null: processed index.html}{client}
+\mess{login}{if exception: sendError}{client}
+\mess{login}{if user == null: processed index.html}{client}
 \begin{call}{login}{session.setAttribute(user)}{login}{}
 \end{call}
 \end{call}
@@ -397,7 +400,7 @@ Precisiazioni riguardo ai sequence diagram: con "processed" si intende il file H
 \mess{reg}{if true: processed registration.html}{client}
 \begin{call}{reg}{createUser(usr, email, psw, ...)}{dao}{boolean}
 \end{call}
-\mess{reg}{if exception: processed registration.html}{client}
+\mess{reg}{if exception: sendError}{client}
 \end{call}
 \end{sequencediagram}
 }
@@ -447,7 +450,7 @@ Precisiazioni riguardo ai sequence diagram: con "processed" si intende il file H
 \end{sequencediagram}
 }
 
-\subsubsection{Esegui Transazione}
+\subsubsection{Esegui transazione}
 \makebox[\textwidth][c]{
 \begin{sequencediagram}
 	\newinst{client}{Client}
@@ -537,6 +540,7 @@ Precisiazioni riguardo ai sequence diagram: con "processed" si intende il file H
 \end{call}
 \end{sequencediagram}
 }
+\pagebreak
 
 \section{Versione RIA}
 
@@ -566,7 +570,8 @@ Si realizzi un’applicazione client server web che modifica le specifiche prece
 
 \subsection{Completamento specifiche}
 \begin{itemize}
-	\item L'autocompletamento propone inizialmente tutti i noi utente nella propria rubrica e, una volta selezionato un nome valido, propone tutti i codici associati a quel username.
+	\item Valgono  i completamenti alla specifiche presenti nella versione pure HTML (subsection 3.2)
+	\item L'auto-completamento propone inizialmente tutti i nomi utente nella propria rubrica e, una volta selezionato un nome valido, propone tutti i codici associati allo username selezionato.
 \end{itemize}
 
 \subsection{Application design}
@@ -613,11 +618,27 @@ Si realizzi un’applicazione client server web che modifica le specifiche prece
 		\item ParameterValidator
 		\item PasswordHashing
 	\end{itemize}
-	\item Views (Templates)
+	\item Viste e componenti
 	\begin{itemize}
 		\item app.html
+		\begin{itemize}
+			\item Navbar
+			\item Sidebar
+			\item Lista account
+			\item Lista transazioni
+			\item Sezione saldo e informazioni account
+			\item Form transazione
+			\item Lista contatti
+			\item Modal
+		\end{itemize}
 		\item index.html
+		\begin{itemize}
+			\item Login form
+		\end{itemize}
 		\item registration.html
+		\begin{itemize}
+			\item Registration form
+		\end{itemize}
 	\end{itemize}
 \end{itemize}
 
@@ -656,6 +677,7 @@ Si realizzi un’applicazione client server web che modifica le specifiche prece
 	\newinst{client}{Client + login.js}
 	\newinst[5]{login}{Login}
 	\newinst[4]{dao}{UserDAO}
+	\begin{call}{client}{click login button}{client}{}
 	\begin{call}{client}{AJAX POST (usr, psd)}{login}{200: user}
 		\begin{call}{login}{validateParameters()}{login}{boolean}
 		\end{call}
@@ -671,6 +693,7 @@ Si realizzi un’applicazione client server web che modifica le specifiche prece
 \end{call}
 \begin{call}{client}{window.location.href = "app.html"}{client}{}
 \end{call}
+\end{call}
 \end{sequencediagram}
 }
 
@@ -680,6 +703,7 @@ Si realizzi un’applicazione client server web che modifica le specifiche prece
 	\newinst{client}{Client + registration.js}
 	\newinst[3]{reg}{Registration}
 	\newinst[4]{dao}{UserDAO}
+		\begin{call}{client}{click sign up button}{client}{}
 	\begin{call}{client}{validateEmail()}{client}{}
 	\end{call}
 	\begin{call}{client}{validatePasswords()}{client}{}
@@ -700,10 +724,11 @@ Si realizzi un’applicazione client server web che modifica le specifiche prece
 	\end{call}
 	\begin{call}{client}{window.location.href = "index.html";"}{client}{}
 	\end{call}
+\end{call}
 \end{sequencediagram}
 }
 
-\subsubsection{Home View Load}
+\subsubsection{Home View load}
 \makebox[\textwidth][c]{
 \begin{sequencediagram}
 	\newinst{client}{Client + app.js}
@@ -723,7 +748,7 @@ Si realizzi un’applicazione client server web che modifica le specifiche prece
 \end{sequencediagram}
 }
 
-\subsubsection{Account View Load}
+\subsubsection{Account View load}
 \makebox[\textwidth][c]{
 \begin{sequencediagram}
 	\newinst{client}{Client + app.js}
@@ -756,7 +781,7 @@ Si realizzi un’applicazione client server web che modifica le specifiche prece
 \end{sequencediagram}
 }
 
-\subsubsection{Esegui Transazione}
+\subsubsection{Esegui transazione}
 \makebox[\textwidth][c]{
 \begin{sequencediagram}
 	\newinst{client}{Client + app.js}
@@ -862,7 +887,7 @@ Si realizzi un’applicazione client server web che modifica le specifiche prece
 \end{call}
 \end{sequencediagram}}
 
-\subsubsection{Auto Completamento}
+\subsubsection{Auto completamento}
 \makebox[\textwidth][c]{
 \begin{sequencediagram}
 	\newinst{client}{Client + app.js} 

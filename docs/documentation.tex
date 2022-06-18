@@ -360,6 +360,7 @@ contiene un \textcolor{ForestGreen}{collegamento per tornare alla pagina precede
 \subsection{Eventi}
 Precisiazioni riguardo ai sequence diagram: con "processed" si intende il file HTML processato tramite \texttt{templateEngine.process()} dopo avere impostato le oppurtune variabili nel \texttt{context}; si assume che le get e le post di seguito rappresentate abbiano già superato i controlli presenti nei filtri.
 \subsubsection{Login}
+\makebox[\textwidth][c]{
 \begin{sequencediagram}
 \newinst{client}{Client}
 \newinst[5]{login}{Login}
@@ -376,8 +377,10 @@ Precisiazioni riguardo ai sequence diagram: con "processed" si intende il file H
 \end{call}
 \end{call}
 \end{sequencediagram}
+}
 
 \subsubsection{Registrazione}
+\makebox[\textwidth][c]{
 \begin{sequencediagram}
 \newinst{client}{Client}
 \newinst[5]{reg}{Registration}
@@ -397,8 +400,10 @@ Precisiazioni riguardo ai sequence diagram: con "processed" si intende il file H
 \mess{reg}{if exception: processed registration.html}{client}
 \end{call}
 \end{sequencediagram}
+}
 
 \subsubsection{Accesso Home Page}
+\makebox[\textwidth][c]{
 \begin{sequencediagram}
 \newinst{client}{Client}
 \newinst[5]{home}{HomePage}
@@ -411,8 +416,10 @@ Precisiazioni riguardo ai sequence diagram: con "processed" si intende il file H
 \mess{home}{if exception: sendError}{client}
 \end{call}
 \end{sequencediagram}
+}
 
 \subsubsection{Accesso Account Page}
+\makebox[\textwidth][c]{
 \begin{sequencediagram}
 \newinst{client}{Client}
 \newinst[2]{page}{AccountPage}
@@ -438,8 +445,10 @@ Precisiazioni riguardo ai sequence diagram: con "processed" si intende il file H
 \mess{page}{if exception: sendError}{client}
 \end{call}
 \end{sequencediagram}
+}
 
 \subsubsection{Esegui Transazione}
+\makebox[\textwidth][c]{
 \begin{sequencediagram}
 	\newinst{client}{Client}
 	\newinst[2]{make}{MakeTransaction}
@@ -471,8 +480,10 @@ Precisiazioni riguardo ai sequence diagram: con "processed" si intende il file H
 		\mess{make}{if exception: sendError}{client}
 	\end{call}
 \end{sequencediagram}
+}
 
 \subsubsection{Esito transazione}
+\makebox[\textwidth][c]{
 \begin{sequencediagram}
 	\newinst{client}{Client}
 	\newinst[2]{page}{TransactionOutcomePage}
@@ -498,8 +509,10 @@ Precisiazioni riguardo ai sequence diagram: con "processed" si intende il file H
 		\mess{page}{if exception: sendError}{client}
 	\end{call}
 \end{sequencediagram}
+}
 
 \subsubsection{Aggiunta contatto}
+\makebox[\textwidth][c]{
 \begin{sequencediagram}
 \newinst{client}{Client}
 \newinst[3]{add}{AddContact}
@@ -523,8 +536,7 @@ Precisiazioni riguardo ai sequence diagram: con "processed" si intende il file H
 	\mess{add}{if exception: sendError}{client}
 \end{call}
 \end{sequencediagram}
-
-\subsection{Considerazioni finali}
+}
 
 \section{Versione RIA}
 
@@ -639,6 +651,7 @@ Si realizzi un’applicazione client server web che modifica le specifiche prece
 \end{table}
 
 \subsubsection{Login}
+\makebox[\textwidth][c]{
 \begin{sequencediagram}
 	\newinst{client}{Client + login.js}
 	\newinst[5]{login}{Login}
@@ -659,8 +672,10 @@ Si realizzi un’applicazione client server web che modifica le specifiche prece
 \begin{call}{client}{window.location.href = "app.html"}{client}{}
 \end{call}
 \end{sequencediagram}
+}
 
 \subsubsection{Registrazione}
+\makebox[\textwidth][c]{
 \begin{sequencediagram}
 	\newinst{client}{Client + registration.js}
 	\newinst[3]{reg}{Registration}
@@ -686,8 +701,10 @@ Si realizzi un’applicazione client server web che modifica le specifiche prece
 	\begin{call}{client}{window.location.href = "index.html";"}{client}{}
 	\end{call}
 \end{sequencediagram}
+}
 
 \subsubsection{Home View Load}
+\makebox[\textwidth][c]{
 \begin{sequencediagram}
 	\newinst{client}{Client + app.js}
 	\newinst[5]{home}{HomePage}
@@ -704,8 +721,10 @@ Si realizzi un’applicazione client server web che modifica le specifiche prece
 \end{call}
 \end{call}
 \end{sequencediagram}
+}
 
 \subsubsection{Account View Load}
+\makebox[\textwidth][c]{
 \begin{sequencediagram}
 	\newinst{client}{Client + app.js}
 	\newinst[4]{page}{AccountPage}
@@ -735,8 +754,10 @@ Si realizzi un’applicazione client server web che modifica le specifiche prece
 \end{call}
 \end{call}
 \end{sequencediagram}
+}
 
 \subsubsection{Esegui Transazione}
+\makebox[\textwidth][c]{
 \begin{sequencediagram}
 	\newinst{client}{Client + app.js}
 	\newinst[2]{make}{MakeTransaction}
@@ -774,8 +795,10 @@ Si realizzi un’applicazione client server web che modifica le specifiche prece
 	\end{call}
 \end{call}
 \end{sequencediagram}
+}
 
 \subsubsection{Esito transazione}
+\makebox[\textwidth][c]{
 \begin{sequencediagram}
 	\newinst{client}{Client + app.js}
 	\newinst[2]{page}{TransactionOutcomePage}
@@ -805,8 +828,10 @@ Si realizzi un’applicazione client server web che modifica le specifiche prece
 \end{call}
 \end{call}
 \end{sequencediagram}
+}
 
 \subsubsection{Aggiunta contatto}
+\makebox[\textwidth][c]{
 \begin{sequencediagram}
 	\newinst{client}{Client + app.js} 
 	\newinst[3]{add}{AddContact}
@@ -835,9 +860,10 @@ Si realizzi un’applicazione client server web che modifica le specifiche prece
 \begin{call}{client}{accountView.show(accountId)}{client}{}
 \end{call}
 \end{call}
-\end{sequencediagram}
+\end{sequencediagram}}
 
 \subsubsection{Auto Completamento}
+\makebox[\textwidth][c]{
 \begin{sequencediagram}
 	\newinst{client}{Client + app.js} 
 	\newinst[7]{utils}{utils.js} 
@@ -850,7 +876,6 @@ Si realizzi un’applicazione client server web che modifica le specifiche prece
 		\end{call}
 	\end{call}
 \end{sequencediagram}
-
-\subsection{Considerazioni finali}
+}
 
 \end{document}

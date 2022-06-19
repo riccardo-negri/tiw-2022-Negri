@@ -68,9 +68,9 @@ const validateAccountCode = (code) => {
     return false
 }
 
-const validateAmount = (amount, balance) => {
+const validateAmount = (amount) => {
     amount = parseInt(amount)
-    balance = parseInt(balance)
+    let balance = parseInt(document.getElementById("balance").textContent.replace(",", "").replace("$", "").trim())
     if (amount > 0 && amount <= balance) return true
     displayGenericModal("Invalid amount", "Please insert a valid amount that is more than zero and within your balance")
     return false

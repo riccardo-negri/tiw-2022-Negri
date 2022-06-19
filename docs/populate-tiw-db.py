@@ -81,13 +81,16 @@ for i in accounts:
         if accounts_money[i] > 1:
             amount = random.randint(1, accounts_money[i])
         accounts_money[i] -= amount
-        timestamp = str_time_prop("2016-1-1 00:00:00", "2022-6-20 00:00:00", "%Y-%m-%d %H:%M:%S")
-        mycursor.execute(sql_t, (timestamp, amount, "Transaction generated automatically: {} -> {}".format(i, y), i, y))
+        timestamp = str_time_prop("2019-1-1 00:00:00", "2022-6-20 00:00:00", "%Y-%m-%d %H:%M:%S")
+        mycursor.execute(sql_t, (timestamp, amount, "Transaction generated automatically by Python script".format(i, y), i, y))
         mydb.commit()
         count_t += 1
 
         if random.randint(1,2) == 1:
-            mycursor.execute(sql_c, (accounts_user[i], y))
+            try:
+                mycursor.execute(sql_c, (accounts_user[i], y))
+            except mysql.connector.errors.IntegrityError:
+                continue
             count_c += 1
         mydb.commit()
 

@@ -200,7 +200,7 @@
                 const form = e.target.closest("form");
                 e.preventDefault();
                 if (form.checkValidity()) {
-                    if (validateAccountCode(form.elements["destination-code"].value) && validateAmount(form.elements["amount"].value, account.balance)) {
+                    if (validateAccountCode(form.elements["destination-code"].value) && validateAmount(form.elements["amount"].value)) {
                         makeCall("POST", 'make-transaction', form, function (x) {
                             if (x.readyState === XMLHttpRequest.DONE) {
                                 const message = x.responseText;

@@ -8,8 +8,9 @@ const accountCodeFormatter = (code) => {
 
 const markupFromTransactions = (transactions) => {
     let markup = ""
+    let currAccount = document.getElementById("account-number").innerText.trim().replaceAll(" ", "")
     transactions.forEach(transaction => {
-        if (transaction.receiver.username.normalize().trim() === JSON.parse(localStorage.getItem("user")).username.normalize().trim()) {
+        if (transaction.destination.normalize().trim() === currAccount) {
             let POSITIVE_TRANSACTION = `<li class="list-group-item border-0 d-flex justify-content-between ps-0 mb-2 border-radius-lg"><div class="d-flex align-items-center"><button class="btn disabled btn-icon-only btn-rounded btn-outline-success mb-0 me-3 btn-sm d-flex align-items-center justify-content-center"><svg xmlns="http://www.w3.org/2000/svg" class="" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M7 11l5-5m0 0l5 5m-5-5v12"/></svg></button><div class="d-flex flex-column"><h6 class="mb-1 text-dark text-sm">${transaction.sender.name + " " + transaction.sender.surname}</h6><span class="text-xs">Sent from ${accountCodeFormatter(transaction.origin)} on ${transaction.timestamp}</span><span class="text-xs">Reason: ${transaction.reason}</span></div></div><div class="d-flex align-items-center text-success text-gradient text-sm font-weight-bold">+ ${currencyFormatter.format(transaction.amount)}</div></li>`
             markup += POSITIVE_TRANSACTION
         } else {

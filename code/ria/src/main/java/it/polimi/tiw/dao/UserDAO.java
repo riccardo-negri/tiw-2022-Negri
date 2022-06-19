@@ -104,6 +104,9 @@ public class UserDAO {
                     // second update: create account
                     accountDAO.createAccount(id);
                 }
+                else {
+                    throw new SQLException("Creating user failed, no ID obtained.");
+                }
             }
             connection.commit();
         } catch (SQLException e) {

@@ -105,6 +105,9 @@ public class TransactionDAO {
                 if (rs.first()) {
                     id = rs.getInt(1);
                 }
+                else {
+                    throw new SQLException("Creating transaction failed, no ID obtained.");
+                }
             }
             // second update: decrease balance of sender
             accountDAO.updateBalance(origin, -amount);

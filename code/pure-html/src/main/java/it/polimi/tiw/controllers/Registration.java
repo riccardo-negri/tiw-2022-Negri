@@ -72,7 +72,7 @@ public class Registration extends AbstractServlet {
         }
 
         // check if the values are correctly formatted
-        if (!name.matches("[a-zA-Z]+") || !surname.matches("[a-zA-Z]+") || !username.matches("[a-zA-Z]+")) {
+        if (!name.matches("^([a-zA-Z]+)$") || !surname.matches("^([a-zA-Z]+)$") || !username.matches("^([a-zA-Z]+)$")) {
             ctx.setVariable("errorMsg", "Name, surname and username must be only letters!");
             templateEngine.process(path, ctx, response.getWriter());
             return;

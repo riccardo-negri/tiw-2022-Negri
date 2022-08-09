@@ -1,16 +1,21 @@
 # tiw-2022-Negri
-IT Technologies for the Web Project - Politecnico di Milano - Academic Year 2021/20222
+IT Technologies for the Web's Project - Politecnico di Milano - Academic Year 2021/20222
 
-## Installazione
-- Eclipse tramite eseguibile scaricato, SQL Workbech tramite Pacman
-- Tomcat installato tamite Eclipse
-- OpendJDK al posto di Oracle JDK
-- MariaDB al posto di Oracle MySQL
-- Versioni di tutto più recenti
+## Description
+This project consists in the developement of a Bank WebApp from the database design to back-end and front-end developement in two different versions: with and without Javascript.
 
-## Configurazione
-- MariaDB credenziali: `admin` + `password` (risolto problemi con: https://stackoverflow.com/questions/25777943/failed-to-connect-to-mysql-at-127-0-0-13306-with-user-root-access-denied-for-us)
-- Usato connector di oracle invece di quello di MariaDB
+## Documentation
+Detailed documentation (in Italian) of the project can be found [here](https://github.com/riccardo-negri/tiw-2022-Negri/tree/main/docs/documentation.pdf).
 
-## Altro
-`sudo systemctl start mysql`
+## Developement environment
+Detailed description (in Italian) of the development environment can be found [here](https://github.com/riccardo-negri/tiw-2022-Negri/tree/main/specs/setup-dev-env.pdf).
+
+Things I did differently than the guidelines: 
+- used `OpenJDK`, `MariaDB`
+- coded on `IntelliJ` (but still ran the projects on Eclipse)
+
+## Demo
+### Pure-html version
+![demo pure-html](.github/assets/demo-pure-html.gif)
+### Ria version
+![demo ria](.github/assets/demo-ria.gif)
